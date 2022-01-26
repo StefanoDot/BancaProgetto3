@@ -1,0 +1,50 @@
+.editObb {
+    padding-left: 5px;
+    padding-top: 10px;
+    font-size: large;
+    color: red;
+}
+ 
+.btnText-area {
+    display: none;
+    visibility: hidden;
+}
+ 
+.center-icon {
+    padding-top:32px;
+}
+ 
+.button-notifica {
+    font-size: 11px;
+    width: 100% !important;
+}
+ 
+.button-verifica {
+    font-size: 12px;
+}
+ 
+.button-save {
+    position: relative;
+    margin-right: 0;
+}
+ 
+.c-container {
+    background-color: whitesmoke !important;
+    border: white solid 10px !important;
+    border-radius: 20px !important;
+}
+ 
+.approval-icon {
+    width: 55px !important;
+    height: 55px !important;
+ }
+ 
+.p-document-name {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+}
+
+.p-document-block-name {
+    font-size: 25px !important;
+    font-weight: 600 !important;
+}

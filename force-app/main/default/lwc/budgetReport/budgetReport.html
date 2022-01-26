@@ -1,0 +1,25 @@
+<template>
+    <div class="slds-box slds-theme_default">
+        <c-chart type="bar">
+            <c-dataset labels={monthsString}>
+                <c-data 
+                label="Erogato" 
+                detail= {finalErogatoValue}
+                backgroundcolor='rgba(255,76,76, 0.6)' 
+                borderwidth="1"
+                >
+                </c-data>
+                <c-data 
+                label="Budget" 
+                detail= {finalStringValue}
+                backgroundcolor='rgba(102,179,255, 0.6)'
+                >
+                </c-data>
+            </c-dataset>
+            <c-title text="Bar Chart"></c-title>
+            <c-legend position="top"></c-legend>
+            <c-animation duration="2000" easing="linear"> </c-animation>
+            <c-cartesian-category-axis axis="x" position="top"></c-cartesian-category-axis>
+        </c-chart>
+    </div>
+</template>

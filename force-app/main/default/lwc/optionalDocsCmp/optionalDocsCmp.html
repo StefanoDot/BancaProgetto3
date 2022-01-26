@@ -1,0 +1,136 @@
+<template>
+    <template for:each={uniqueArray} for:item="element">
+        <h3 if:true={element.value.titleCondition} key={element.value.Id} slot="title" class="p-document-block-name slds-align_absolute-center">{element.value.Document_Block__c}</h3>
+        <div class="c-container" key={element.key}>
+            <div class="slds-grid">
+                <div  class="slds-max-large-size_1-of-12">
+                    <h2 if:true={element.value.isDocTypeMandatory} class="editObb">*</h2>
+                </div>
+                <div class="slds-size_11-of-12 slds-float_left">
+                    <p class="p-document-name slds-m-around_x-small">&nbsp;{element.value.Name}</p>
+                </div>
+            </div>
+
+            <div>
+                <div>
+                    <c-upload-files document-type-id={element.value.Id}
+                                    record-id={recordId}
+                                    is-upload-disabled={element.value.isUploadDisabled}
+                                    onuploadfinished={handleUploadFinished}>
+                    </c-upload-files>
+                </div>
+
+                <div>
+                    <br>
+                    <c-document-list document-type-id={element.value.Id}
+                                     all-docs-map={documentMap}
+                                     onvaluechanged={handleVerificaSalesSupportChanged}>
+                    </c-document-list>
+                </div>
+
+                <div class="slds-grid">
+                    <div class="slds-col slds-size_1-of-12 slds-col slds-p-around_small center-icon"></div>
+
+                    <div class="slds-col slds-size_4-of-12 slds-p-vertical_small slds-p-right_small">
+                        <lightning-textarea class="textareaUpload"
+                                            data-id={element.value.Id}
+                                            disabled={element.value.isCommentAreaDisabled}
+                                            name=commentTxtBox
+                                            value={element.value.commentFromDocuments}
+                                            label={element.value.labelComment}
+                                            max-length="500"
+                                            message-when-too-long="E' consentito inserire massimo 140 caratteri nella nota."
+                                            placeholder={element.value.placeComment} >
+                        </lightning-textarea>
+                    </div>
+
+                    <div class="slds-col slds-size_4-of-12 slds-p-top_medium slds-p-right_small slds-align_absolute-right slds-size_small" ></div>
+
+                    <div class="slds-col slds-size_3-of-12 slds-p-top_x-large slds-p-right_small slds-align_absolute-right slds-size_small">
+                        <lightning-input label={element.value.verificaGlobaleLabel}
+                                         name=verificaGlobaleTxtBox
+                                         data-id={element.value.Id}
+                                         value={element.value.verificaGlobale}
+                                         type="text"
+                                         read-only>
+                        </lightning-input>
+                    </div>
+                </div>
+
+                <div class="slds-grid">
+                    <div class="slds-col slds-size_1-of-12 slds-p-around_small"></div>
+
+                    <div class="slds-col slds-size_2-of-12 slds-p-vertical_small slds-p-right_small slds-m-right_x-small">
+                        <lightning-button  if:false={element.value.isCommentAreaDisabled}
+                                           disabled={element.value.disableSalvaButton}
+                                           data-id={element.value.Id}
+                                           label="SALVA"
+                                           onclick={updateCommentFieldInDocuments}
+                                           name="salvaBtn"
+                                           class="button-save">
+                        </lightning-button>
+                    </div>
+
+                    <div class="slds-col slds-size_5-of-12 slds-p-around_small"></div>
+
+                    <div class="slds-col slds-size_2-of-12 slds-size_small slds-p-around_small">
+                        <lightning-button data-id="Elimina"
+                                          label="Elimina"
+                                          disabled={element.value.disableEliminaButton}
+                                          onclick={removeFiles}
+                                          name={element.value.Id}
+                                          variant="brand"
+                                          class="button-verifica slds-align_absolute-center">
+                        </lightning-button>
+												<!--  disabled={element.value.disableEliminaButton} -->
+                    </div>
+
+                    <div class="slds-col slds-size_2-of-12 slds-size_small slds-p-around_small">
+                        <lightning-button data-id="Sostituisci"
+                                          label="Sostituisci"
+                                          disabled={element.value.disableSostituisciButton}
+                                          onclick={replaceFiles}
+                                          name={element.value.Id}
+                                          variant="brand"
+                                          class="button-verifica slds-align_absolute-center">
+                        </lightning-button>
+                    </div>
+                </div>
+            </div>
+
+            <template if:true={showFileNameModal}>
+                <c-file-name-modal is-modal-open={showFileNameModal}
+                                   document-type-id={documentTypeId}
+                                   account-id={accountId}
+                                   opportunity={opportunity}
+                                   file-name={fileName}
+                                   file-id={fileId}
+                                   default-file-name={defaultFileName}
+                                   replace-doc-id={replaceFileId}
+                                   comment-to-save={commentToSave}
+                                   onfilenameupdated={handleFileNameUpdated}
+                                   onclosedmodal={handleClosedFileNameModal}
+                                   is-sostituisci={isSostituisci}
+                >
+                </c-file-name-modal>
+            </template>
+        </div>
+    </template>
+
+    <template if:true={isEliminaSostituisciModalOpen}>
+        <c-modal-popup-lwc is-modal-open={isEliminaSostituisciModalOpen} record-id={recordId}
+                           show-elimina= {showElimina} document-map={documentMap}
+                           document-type={documentTypeToPass} onclosemodalevnt={closeEliminaSostituisciModal}
+                           onuploadfinished={handleUploadFinished}>
+        </c-modal-popup-lwc>
+    </template>
+
+    <template if:true={showSpinner} data-id="spinnerSectionModal" tabindex="-1"
+              class="slds-modal slds-fade-in-open slds-backdrop mro-modal-small">
+        <lightning-spinner alternative-text="Loading"
+                           variant="brand"
+                           size="large"
+        >
+        </lightning-spinner>
+    </template>
+</template>

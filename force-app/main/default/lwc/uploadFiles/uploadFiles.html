@@ -1,0 +1,19 @@
+<!--
+ - Created by mocan on 23/06/2021.
+ -->
+
+<!-- Upload Files -->
+<template>
+  <div>
+    <lightning-file-upload
+      label=""
+      name={documentTypeId}
+      accept={acceptedFormats}
+      record-id={recordId}
+      disabled={isUploadDisabled}
+      onuploadfinished={handleUploadFinished}
+      aria-required="true"
+    >
+    </lightning-file-upload>
+  </div>
+</template>

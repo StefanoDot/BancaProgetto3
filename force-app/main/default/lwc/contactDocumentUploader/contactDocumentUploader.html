@@ -1,0 +1,793 @@
+<template>
+ 
+    <template if:true={isModalOpen}>
+        <div class="demo-only" style="height: 640px;">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModal}>
+                            <lightning-icon icon-name="utility:close" size="x-small" class="slds-align_absolute-center">
+                            </lightning-icon>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Verifica Inside Sales</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <center if:false={messageNDG}><h2><b>Sei sicuro di voler richiedere l'NDG per questa opportunità?</b></h2><br/>
+                        </center>
+                        <center if:true={messageNDG}><h2><b>{messageNDG}</b></h2><br/>
+                        </center>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning-button label="Annulla" variant="neutral" onclick={closeModal}></lightning-button>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <lightning-button if:false={messageNDG} label="Richiedi" variant="brand" onclick={getNDG}></lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+        </template>
+
+    
+<!-- 
+        <template if:true={testing}>
+
+            <div style="width: 320px;">
+                <lightning-vertical-navigation >
+                    <template for:each={contacts.data} for:item="contact">
+                        <lightning-vertical-navigation-section key={contact.Id} label={contact.Name}>
+                            <template for:each={contact.items} for:item="item">
+                               
+                             
+                               
+                                    <lightning-vertical-navigation-item key={item.Id} label={item.Name} name={item.Name}></lightning-vertical-navigation-item>
+                                
+                            </template>
+        
+                        </lightning-vertical-navigation-section>
+                    </template>
+                </lightning-vertical-navigation>
+            </div>
+        </template>
+        <template if:true={testing}>
+           
+            <lightning-card title="ApexWireMethodToProperty" icon-name="custom:custom63">
+                <div class="slds-m-around_medium">
+                    <template if:true={contacts.data}>
+                        <template for:each={contacts.data} for:item="contact">
+                           
+                            <button onclick={getCtnDoc} key={contact.Id}>{contact.Name}</button>
+                        </template>
+                    </template>
+                </div>
+            </lightning-card>
+
+        </template> -->
+        <template if:true={checkForState}>
+        <label class="slds-form-element__label" for="select-01">Select Contact</label>
+        <div class="slds-form-element__control">
+            <div class="slds-select_container">
+                <select class="slds-select" id="select-01" onchange={getCtnDoc}>
+                    <option key={first} value='' ></option>
+                    <!--iterate all picklist values from accounts list using for:each loop-->
+                    <template for:each={contacts.data} for:item="acc">
+                        <option key={acc.Id} value={acc.Id} >
+                            <template if:true={acc.Fidejussore__c}>
+                            <p>Name: {acc.Name};&nbsp;&nbsp;&nbsp;&nbsp;  Ruolo: {acc.Ruolo_in_Azienda__c};&nbsp;&nbsp;&nbsp;&nbsp;  Fidejussore: Presente;</p> 
+                        </template>
+                        <template if:false={acc.Fidejussore__c}>
+                            <p>Name: {acc.Name};&nbsp;&nbsp;&nbsp;&nbsp;  Ruolo: {acc.Ruolo_in_Azienda__c};&nbsp;&nbsp;&nbsp;&nbsp;  Fidejussore: Non Presente;</p> 
+                        </template>
+                        </option>
+                    </template>
+                </select>
+            </div>
+        </div>
+        
+    </template> 
+
+
+
+    <template if:true={recordListDocumentAllBlock}>
+        
+        <template  for:each={recordListDocumentAllBlock} for:item="docArray">    
+            <lightning-card key={docArray}>
+                <template  for:each={docArray} for:item="type">
+                <h3 if:true={type.titleCondition} key={type.id} slot="title">{type.DocumentBlockFormula__c}</h3>  
+                 <div class="c-container " key={type.DocumentType__c} >
+                 
+                     <div class="slds-grid">
+                         <div class="slds-col slds-size_1-of-12 slds-p-around_small center-icon">
+                             <lightning-icon if:true={type.boolUrlApproval}   icon-name="action:upload" alternative-text="Approved" class="slds-align_absolute-center approval-icon" ></lightning-icon>
+                             <lightning-icon if:true={type.boolUrlStandBy}   icon-name="utility:warning" alternative-text="Warning!" variant="warning" class="slds-align_absolute-center standby-icon"  ></lightning-icon>
+                             <lightning-icon if:true={type.boolLoading}   icon-name="utility:spinner" alternative-text="Fai refresh!" class="slds-align_absolute-center reset_password-icon" ></lightning-icon>
+
+                            </div>
+                         <div class="slds-col slds-size_4-of-12 slds-p-vertical_small slds-p-right_small">
+                             <div>
+ 
+                                 <div if:true={type.ObligatorioCont__c} ><h2 class="editObb" >*</h2></div><p class="p-document-name">&nbsp;&nbsp;{type.DocumentTypeNameFormula__c}</p></div>
+                            
+                                 <template if:false={type.isDocEasyPlus}>
+                                    <template if:true={type.boolServizi}>
+                                    <lightning-file-upload            
+                                        variant="brand"
+                                        name={type.Id}
+                                        accept={acceptedFormats}
+                                        record-id={recordId}
+                                        disabled={isErogazioneServizi}
+                                        onuploadfinished={handleUploadFinished}
+                                        aria-required="true"
+                                        multiple>
+                                </lightning-file-upload>  
+                            </template>
+                            <template if:false={type.boolServizi}>
+                                <lightning-file-upload                   
+                                variant="brand"
+                                name={type.Id}
+                                accept={acceptedFormats}
+                                record-id={recordId}
+                                disabled={isRecTypeRO}
+                                onuploadfinished={handleUploadFinished}
+                                aria-required="true"
+                                multiple>
+                        </lightning-file-upload>   
+                    </template>
+                    </template>
+    
+                    <template if:true={type.isDocEasyPlus}>
+                        <template if:true={type.boolServizi}>
+                        <lightning-file-upload            
+                            variant="brand"
+                            name={type.Id}
+                            accept={acceptedFormats}
+                            record-id={recordId}
+                            disabled={fidimedAndErogazione}
+                            onuploadfinished={handleUploadFinished}
+                            aria-required="true"
+                            multiple>
+                    </lightning-file-upload>  
+                </template>
+                <template if:false={type.boolServizi}>
+                    <lightning-file-upload                   
+                    variant="brand"
+                    name={type.Id}
+                    accept={acceptedFormats}
+                    record-id={recordId}
+                    disabled={isNotFidimed}
+                    onuploadfinished={handleUploadFinished}
+                    aria-required="true"
+                    multiple>
+            </lightning-file-upload>   
+        </template>
+        </template>                     
+                         </div>
+                         <div class="slds-col slds-size_4-of-12"></div>
+                         
+                         <div class="slds-col slds-size_3-of-12 slds-p-top_x-large slds-p-right_small slds-align_absolute-right slds-size_small">
+                         
+                            <template if:false={type.isDocEasyPlus}>
+                                <lightning-combobox
+                                if:true={type.Url_Documento__c}
+                                name={type.Id}
+                                label='Verifica Sales Support'
+                                value={type.Verifica_Sales_Support__c}
+                                placeholder={type.Verifica_Sales_Support__c}
+                                options={options}
+                                onchange={handleChange} 
+                                disabled={isComboboxDisabled}>
+                            </lightning-combobox>
+                                 </template>
+     
+                            <template if:true={type.isDocEasyPlus}>
+                             <lightning-combobox
+                            if:true={type.Url_Documento__c}
+                            name={type.Id}
+                            label='Verifica Sales Support'
+                            value={type.Verifica_Sales_Support__c}
+                            placeholder={type.Verifica_Sales_Support__c}
+                            options={options}
+                            onchange={handleChange} 
+                            disabled={stopFidimed}>
+                         </lightning-combobox>
+                         </template>
+                        </div>
+                       
+                 </div>
+                 <div class="slds-grid">
+                     <div class="slds-col slds-size_1-of-12 slds-col slds-size_1-of-12 slds-p-around_small center-icon">
+                     </div>
+                     <div class="slds-col slds-size_4-of-12 slds-p-vertical_small slds-p-right_small">
+
+                       <template if:true={isRecTypeRO}>
+                         <lightning-textarea class="textareaUpload"  disabled=true onchange={onchangeButton} name={type.Id} value={type.Commento_Sales_Support__c}  label={labelComment} maxlength="500"
+                                         message-when-too-long="A maximum of 140 characters are allowed in a tweet." placeholder={placeComment} >    
+                         </lightning-textarea>
+                        </template>
+
+                        <template if:false={isRecTypeRO}>
+                            <lightning-textarea class="textareaUpload"  disabled={noteVisbile} onchange={onchangeButton} name={type.Id} value={type.Commento_Sales_Support__c}  label={labelComment} maxlength="500"
+                                            message-when-too-long="A maximum of 140 characters are allowed in a tweet." placeholder={placeComment} >    
+                            </lightning-textarea>
+                           </template>
+ 
+                     </div>
+ 
+                     <div class="slds-col slds-size_4-of-12 slds-p-top_medium slds-p-right_small slds-align_absolute-right slds-size_small" ></div>
+                     <div class="slds-col slds-size_3-of-12 slds-p-top_x-large slds-p-right_small slds-align_absolute-right slds-size_small">
+                         <lightning-button   if:true={type.Url_Documento__c}  variant="brand" flexibility="grow" label="Vai al documento" onclick={openDocument} class="button-verifica slds-align_absolute-right" name={type.Url_Documento__c}></lightning-button>
+                     </div>
+ 
+ 
+                                </div>
+                                
+                     <div class="slds-grid">
+                         <div class="slds-col slds-size_1-of-12 slds-p-around_small">
+ 
+                         </div>
+                         <template if:false={salvabuttonhidden}>
+                         <div class="slds-col slds-size_2-of-20 slds-p-vertical_small slds-p-right_small slds-m-right_x-small">
+                          <lightning-button  disabled={isRecTypeRO} data-id={type.Id} label="SALVA" id={type.Id} onclick={updateUrl} name={type.Id} class="button-save"></lightning-button>
+ 
+                      </div>
+                     </template>
+                    
+                     </div>
+                
+                
+             </div> 
+         </template>
+         
+     </lightning-card>
+     </template> 
+ </template> 
+
+</template>
+<!--    
+    <template if:true={recordListDocumentAllBlockB}>
+        <template if:true={boolViewB}>
+        <lightning-card><h3 slot="title">Documenti ufficiali</h3>
+        <template for:each={recordListDocumentAllBlockB} for:item="type"> 
+
+                <div class="c-container " key={type.DocumentType__c} >
+                
+                    <div class="slds-grid">
+                        <div class="slds-col slds-size_1-of-12 slds-p-around_small center-icon">
+                            <lightning-icon if:true={type.boolUrlApproval}   icon-name="action:upload" alternative-text="Approved" class="slds-align_absolute-center approval-icon" ></lightning-icon>
+                            <lightning-icon if:true={type.boolUrlStandBy}   icon-name="utility:warning" alternative-text="Warning!" variant="warning" class="slds-align_absolute-center standby-icon"  ></lightning-icon>
+                        </div>
+                        <div class="slds-col slds-size_4-of-12 slds-p-vertical_small slds-p-right_small">
+                            <div><div if:true={type.Obbligatorio__c} ><h2 class="editObb" >*</h2></div><p class="p-document-name">&nbsp;&nbsp;{type.DocumentTypeNameFormula__c}</p></div>
+                            <lightning-file-upload            
+                                    
+                                    variant="brand"
+                                    name={type.Id}
+                                    accept={acceptedFormats}
+                                    record-id={recordId}
+                                    onuploadfinished={handleUploadFinished}
+                                    aria-required="true"
+                                    multiple>
+                            </lightning-file-upload>                               
+                        </div>
+                       
+                                          </div>
+                    <div class="slds-grid">
+                        <div class="slds-col slds-size_1-of-12">
+                        </div>
+                        <div class="slds-col slds-size_4-of-12 slds-p-vertical_small slds-p-right_small">
+                            <lightning-textarea class="textareaUpload" onchange={onchangeButton} name={type.Id} value={type.Commento_Sales_Support__c}  label="Inserire nota supplementare, max 500 caratteri" maxlength="500"
+                                            message-when-too-long="A maximum of 140 characters are allowed in a tweet." placeholder="type here..." >    
+                            </lightning-textarea>
+                        </div>
+    
+                        <div class="slds-col slds-size_3-of-12 slds-p-around_small slds-align_absolute-center slds-size_small">
+                            <lightning-button  variant="brand" flexibility="grow" label="Vai al documento" onclick={openDocument} class="button-verifica" name={type.Url_Documento__c}></lightning-button>
+                        </div>
+    
+                    </div>
+    
+                        <div class="slds-grid">
+                            <div class="slds-col slds-size_1-of-12 slds-p-around_small">
+    
+                            </div>
+                            <div class="slds-col slds-size_4-of-12 slds-p-vertical_small slds-p-right_small slds-m-right_x-small">
+                             <lightning-button data-id={type.Id} label="SALVA" id={type.Id} onclick={updateUrl} name={type.Id} class="button-save"></lightning-button>
+ 
+                             </div>
+                        </div>
+    
+                </div> 
+            </template>
+    </lightning-card><hr>
+    </template> 
+    </template>
+
+    <template if:true={recordListDocumentAllBlockC}>
+        <template if:true={boolViewC}>
+        <lightning-card><h3 slot="title">Fideiussione Persona Fisica</h3>
+        <template for:each={recordListDocumentAllBlockC} for:item="type"> 
+
+                <div class="c-container " key={type.DocumentType__c} >
+                    <div class="slds-grid">
+                        <div class="slds-col slds-size_1-of-12 slds-p-around_small center-icon">
+                            <lightning-icon if:true={type.boolUrlApproval}   icon-name="action:upload" alternative-text="Approved" class="slds-align_absolute-center approval-icon" ></lightning-icon>
+                            <lightning-icon if:true={type.boolUrlStandBy}   icon-name="utility:warning" alternative-text="Warning!" variant="warning" class="slds-align_absolute-center standby-icon"  ></lightning-icon>
+                        </div>
+                        <div class="slds-col slds-size_4-of-12 slds-p-vertical_small slds-p-right_small">
+                            <div><div if:true={type.Obbligatorio__c} ><h2 class="editObb" >*</h2></div><p class="p-document-name">&nbsp;&nbsp;{type.DocumentTypeNameFormula__c}</p></div>
+                            <lightning-file-upload            
+                                    
+                                    variant="brand"
+                                    name={type.Id}
+                                    accept={acceptedFormats}
+                                    record-id={recordId}
+                                    onuploadfinished={handleUploadFinished}
+                                    aria-required="true"
+                                    multiple>
+                            </lightning-file-upload>                               
+                        </div>
+                      
+                        
+                    </div>
+                    <div class="slds-grid">
+                        <div class="slds-col slds-size_1-of-12">
+                        </div>
+                        <div class="slds-col slds-size_4-of-12 slds-p-vertical_small slds-p-right_small">
+                            <lightning-textarea class="textareaUpload" onchange={onchangeButton} name={type.Id} value={type.Commento_Sales_Support__c}  label="Inserire nota supplementare, max 500 caratteri" maxlength="500"
+                                            message-when-too-long="A maximum of 140 characters are allowed in a tweet." placeholder="type here..." >    
+                            </lightning-textarea>
+                        </div>
+    
+                        <div class="slds-col slds-size_3-of-12 slds-p-around_small slds-align_absolute-center slds-size_small">
+                            <lightning-button  variant="brand" flexibility="grow" label="Vai al documento" onclick={openDocument} class="button-verifica" name={type.Url_Documento__c}></lightning-button>
+                        </div>
+    
+                  
+    
+                    </div>
+    
+                        <div class="slds-grid">
+                            <div class="slds-col slds-size_1-of-12 slds-p-around_small">
+    
+                            </div>
+                            <div class="slds-col slds-size_4-of-12 slds-p-vertical_small slds-p-right_small slds-m-right_x-small">
+                             <lightning-button data-id={type.Id} label="SALVA" id={type.Id} onclick={updateUrl} name={type.Id} class="button-save"></lightning-button>
+ 
+                             </div>
+                        </div>
+                </div> 
+           
+        </template> 
+    </lightning-card><hr >
+    </template> 
+    </template>
+
+    <template if:true={recordListDocumentAllBlockD}>
+        <template if:true={boolViewD}>
+        <lightning-card><h3 slot="title">Situazione finanziaria</h3>
+        <template for:each={recordListDocumentAllBlockD} for:item="type"> 
+
+                <div class="c-container " key={type.DocumentType__c} >
+                    <div class="slds-grid">
+                        <div class="slds-col slds-size_1-of-12 slds-p-around_small center-icon">
+                            <lightning-icon if:true={type.boolUrlApproval}   icon-name="action:upload" alternative-text="Approved" class="slds-align_absolute-center approval-icon" ></lightning-icon>
+                            <lightning-icon if:true={type.boolUrlStandBy}   icon-name="utility:warning" alternative-text="Warning!" variant="warning" class="slds-align_absolute-center standby-icon"  ></lightning-icon>
+                        </div>
+                        <div class="slds-col slds-size_4-of-12 slds-p-vertical_small slds-p-right_small">
+                            <div><div if:true={type.Obbligatorio__c} ><h2 class="editObb" >*</h2></div><p class="p-document-name">&nbsp;&nbsp;{type.DocumentTypeNameFormula__c}</p></div>
+                            <lightning-file-upload            
+                                    
+                                    variant="brand"
+                                    name={type.Id}
+                                    accept={acceptedFormats}
+                                    record-id={recordId}
+                                    onuploadfinished={handleUploadFinished}
+                                    aria-required="true"
+                                    multiple>
+                            </lightning-file-upload>                               
+                        </div>
+                     
+                      
+                    </div>
+                    <div class="slds-grid">
+                        <div class="slds-col slds-size_1-of-12">
+                        </div>
+                        <div class="slds-col slds-size_4-of-12 slds-p-vertical_small slds-p-right_small">
+                            <lightning-textarea class="textareaUpload" onchange={onchangeButton} name={type.Id} value={type.Commento_Sales_Support__c}  label="Inserire nota supplementare, max 500 caratteri" maxlength="500"
+                                            message-when-too-long="A maximum of 140 characters are allowed in a tweet." placeholder="type here..." >    
+                            </lightning-textarea>
+                        </div>
+    
+                        <div class="slds-col slds-size_3-of-12 slds-p-around_small slds-align_absolute-center slds-size_small">
+                            <lightning-button  variant="brand" flexibility="grow" label="Vai al documento" onclick={openDocument} class="button-verifica" name={type.Url_Documento__c}></lightning-button>
+                        </div>
+    
+                  
+    
+                    </div>
+    
+                        <div class="slds-grid">
+                            <div class="slds-col slds-size_1-of-12 slds-p-around_small">
+    
+                            </div>
+                            <div class="slds-col slds-size_4-of-12 slds-p-vertical_small slds-p-right_small slds-m-right_x-small">
+                             <lightning-button data-id={type.Id} label="SALVA" id={type.Id} onclick={updateUrl} name={type.Id} class="button-save"></lightning-button>
+ 
+                             </div>
+                        </div>
+    
+                </div> 
+            </template>
+    </lightning-card><hr >
+    </template> 
+    </template>
+
+
+    <template if:true={recordListDocumentAllBlockE}>
+        <template if:true={boolViewE}>
+        <lightning-card><h3 slot="title">Fideiussione Persona Giuridica</h3>
+        <template for:each={recordListDocumentAllBlockE} for:item="type">
+
+            <div class="c-container " key={type.DocumentType__c} >
+                <div class="slds-grid">
+                    <div class="slds-col slds-size_1-of-12 slds-p-around_small center-icon">
+                        <lightning-icon if:true={type.boolUrlApproval}   icon-name="action:upload" alternative-text="Approved" class="slds-align_absolute-center approval-icon" ></lightning-icon>
+                        <lightning-icon if:true={type.boolUrlStandBy}   icon-name="utility:warning" alternative-text="Warning!" variant="warning" class="slds-align_absolute-center standby-icon"  ></lightning-icon>
+                    </div>
+                    <div class="slds-col slds-size_4-of-12 slds-p-vertical_small slds-p-right_small">
+                        <div><div if:true={type.Obbligatorio__c} ><h2 class="editObb" >*</h2></div><p class="p-document-name">&nbsp;&nbsp;{type.DocumentTypeNameFormula__c}</p></div>
+                        <lightning-file-upload            
+                                
+                                variant="brand"
+                                name={type.Id}
+                                accept={acceptedFormats}
+                                record-id={recordId}
+                                onuploadfinished={handleUploadFinished}
+                                aria-required="true"
+                                multiple>
+                        </lightning-file-upload>                               
+                    </div>
+                  
+                   
+                </div>
+                <div class="slds-grid">
+                    <div class="slds-col slds-size_1-of-12">
+                    </div>
+                    <div class="slds-col slds-size_4-of-12 slds-p-vertical_small slds-p-right_small">
+                        <lightning-textarea class="textareaUpload" onchange={onchangeButton} name={type.Id} value={type.Commento_Sales_Support__c}  label="Inserire nota supplementare, max 500 caratteri" maxlength="500"
+                                        message-when-too-long="A maximum of 140 characters are allowed in a tweet." placeholder="type here..." >    
+                        </lightning-textarea>
+                    </div>
+
+                    <div class="slds-col slds-size_3-of-12 slds-p-around_small slds-align_absolute-center slds-size_small">
+                        <lightning-button  variant="brand" flexibility="grow" label="Vai al documento" onclick={openDocument} class="button-verifica" name={type.Url_Documento__c}></lightning-button>
+                    </div>
+
+              
+
+                </div>
+
+                    <div class="slds-grid">
+                        <div class="slds-col slds-size_1-of-12 slds-p-around_small">
+
+                        </div>
+                        <div class="slds-col slds-size_4-of-12 slds-p-vertical_small slds-p-right_small slds-m-right_x-small">
+                         <lightning-button data-id={type.Id} label="SALVA" id={type.Id} onclick={updateUrl} name={type.Id} class="button-save"></lightning-button>
+
+                         </div>
+                    </div>
+            </div> 
+
+        </template> 
+    </lightning-card><hr >
+    </template> 
+    </template>
+
+
+
+    <template if:true={recordListDocumentAllBlockF}>
+        <template if:true={boolViewF}>
+        <lightning-card><h3 slot="title">Proposta e relazione commerciale</h3>
+        <template for:each={recordListDocumentAllBlockF} for:item="type">  
+            <div class="c-container " key={type.DocumentType__c} >
+                <div class="slds-grid">
+                    <div class="slds-col slds-size_1-of-12 slds-p-around_small center-icon">
+                        <lightning-icon if:true={type.boolUrlApproval}   icon-name="action:upload" alternative-text="Approved" class="slds-align_absolute-center approval-icon" ></lightning-icon>
+                        <lightning-icon if:true={type.boolUrlStandBy}   icon-name="utility:warning" alternative-text="Warning!" variant="warning" class="slds-align_absolute-center standby-icon"  ></lightning-icon>
+                    </div>
+                    <div class="slds-col slds-size_4-of-12 slds-p-vertical_small slds-p-right_small">
+                        <div><div if:true={type.Obbligatorio__c} ><h2 class="editObb" >*</h2></div><p class="p-document-name">&nbsp;&nbsp;{type.DocumentTypeNameFormula__c}</p></div>
+                        <lightning-file-upload            
+                                
+                                variant="brand"
+                                name={type.Id}
+                                accept={acceptedFormats}
+                                record-id={recordId}
+                                onuploadfinished={handleUploadFinished}
+                                aria-required="true"
+                                multiple>
+                        </lightning-file-upload>                               
+                    </div>
+                   
+                    
+                </div>
+                <div class="slds-grid">
+                    <div class="slds-col slds-size_1-of-12">
+                    </div>
+                    <div class="slds-col slds-size_4-of-12 slds-p-vertical_small slds-p-right_small">
+                        <lightning-textarea class="textareaUpload" onchange={onchangeButton} name={type.Id} value={type.Commento_Sales_Support__c}  label="Inserire nota supplementare, max 500 caratteri" maxlength="500"
+                                        message-when-too-long="A maximum of 140 characters are allowed in a tweet." placeholder="type here..." >    
+                        </lightning-textarea>
+                    </div>
+
+                    <div class="slds-col slds-size_3-of-12 slds-p-around_small slds-align_absolute-center slds-size_small">
+                        <lightning-button  variant="brand" flexibility="grow" label="Vai al documento" onclick={openDocument} class="button-verifica" name={type.Url_Documento__c}></lightning-button>
+                    </div>
+
+               
+                </div>
+
+                    <div class="slds-grid">
+                        <div class="slds-col slds-size_1-of-12 slds-p-around_small">
+
+                        </div>
+                        <div class="slds-col slds-size_4-of-12 slds-p-vertical_small slds-p-right_small slds-m-right_x-small">
+                         <lightning-button data-id={type.Id} label="SALVA" id={type.Id} onclick={updateUrl} name={type.Id} class="button-save"></lightning-button>
+
+                         </div>
+                    </div>
+
+            </div> 
+        </template>     
+    </lightning-card><hr >
+    </template> 
+    </template>
+
+    <template if:true={recordListDocumentAllBlockG}>
+        <template if:true={boolViewG}>
+        <lightning-card><h3 slot="title">Situazione finanziaria GRUPPO</h3>
+        <template for:each={recordListDocumentAllBlockG} for:item="type"> 
+
+            <div class="c-container " key={type.DocumentType__c} >
+                <div class="slds-grid">
+                    <div class="slds-col slds-size_1-of-12 slds-p-around_small center-icon">
+                        <lightning-icon if:true={type.boolUrlApproval}   icon-name="action:upload" alternative-text="Approved" class="slds-align_absolute-center approval-icon" ></lightning-icon>
+                        <lightning-icon if:true={type.boolUrlStandBy}   icon-name="utility:warning" alternative-text="Warning!" variant="warning" class="slds-align_absolute-center standby-icon"  ></lightning-icon>
+                    </div>
+                    <div class="slds-col slds-size_4-of-12 slds-p-vertical_small slds-p-right_small">
+                        <div><div if:true={type.Obbligatorio__c} ><h2 class="editObb" >*</h2></div><p class="p-document-name">&nbsp;&nbsp;{type.DocumentTypeNameFormula__c}</p></div>
+                        <lightning-file-upload            
+                                
+                                variant="brand"
+                                name={type.Id}
+                                accept={acceptedFormats}
+                                record-id={recordId}
+                                onuploadfinished={handleUploadFinished}
+                                aria-required="true"
+                                multiple>
+                        </lightning-file-upload>                               
+                    </div>
+                 
+                  
+                </div>
+                <div class="slds-grid">
+                    <div class="slds-col slds-size_1-of-12">
+                    </div>
+                    <div class="slds-col slds-size_4-of-12 slds-p-vertical_small slds-p-right_small">
+                        <lightning-textarea class="textareaUpload" onchange={onchangeButton} name={type.Id} value={type.Commento_Sales_Support__c}  label="Inserire nota supplementare, max 500 caratteri" maxlength="500"
+                                        message-when-too-long="A maximum of 140 characters are allowed in a tweet." placeholder="type here..." >    
+                        </lightning-textarea>
+                    </div>
+
+                    <div class="slds-col slds-size_3-of-12 slds-p-around_small slds-align_absolute-center slds-size_small">
+                        <lightning-button  variant="brand" flexibility="grow" label="Vai al documento" onclick={openDocument} class="button-verifica" name={type.Url_Documento__c}></lightning-button>
+                    </div>
+
+            
+
+                </div>
+
+                    <div class="slds-grid">
+                        <div class="slds-col slds-size_1-of-12 slds-p-around_small">
+
+                        </div>
+                        <div class="slds-col slds-size_4-of-12 slds-p-vertical_small slds-p-right_small slds-m-right_x-small">
+                         <lightning-button data-id={type.Id} label="SALVA" id={type.Id} onclick={updateUrl} name={type.Id} class="button-save"></lightning-button>
+
+                         
+                         </div>
+                    </div>
+
+            </div> 
+        </template>                     
+            
+    </lightning-card><hr >
+    </template> 
+    </template>
+
+    <template if:true={recordListDocumentAllBlockL}>
+        <template if:true={boolViewL}>
+        <lightning-card><h3 slot="title">Documenti ufficiali GRUPPO</h3>
+        <template for:each={recordListDocumentAllBlockL} for:item="type"> 
+
+            <div class="c-container " key={type.DocumentType__c} >
+                <div class="slds-grid">
+                    <div class="slds-col slds-size_1-of-12 slds-p-around_small center-icon">
+                        <lightning-icon if:true={type.boolUrlApproval}   icon-name="action:upload" alternative-text="Approved" class="slds-align_absolute-center approval-icon" ></lightning-icon>
+                        <lightning-icon if:true={type.boolUrlStandBy}   icon-name="utility:warning" alternative-text="Warning!" variant="warning" class="slds-align_absolute-center standby-icon"  ></lightning-icon>
+                    </div>
+                    <div class="slds-col slds-size_4-of-12 slds-p-vertical_small slds-p-right_small">
+                        <div><div if:true={type.Obbligatorio__c} ><h2 class="editObb" >*</h2></div><p class="p-document-name">&nbsp;&nbsp;{type.DocumentTypeNameFormula__c}</p></div>
+                        <lightning-file-upload            
+                                
+                                variant="brand"
+                                name={type.Id}
+                                accept={acceptedFormats}
+                                record-id={recordId}
+                                onuploadfinished={handleUploadFinished}
+                                aria-required="true"
+                                multiple>
+                        </lightning-file-upload>                               
+                    </div>
+                  
+                </div>
+                <div class="slds-grid">
+                    <div class="slds-col slds-size_1-of-12">
+                    </div>
+                    <div class="slds-col slds-size_4-of-12 slds-p-vertical_small slds-p-right_small">
+                        <lightning-textarea class="textareaUpload" onchange={onchangeButton} name={type.Id} value={type.Commento_Sales_Support__c}  label="Inserire nota supplementare, max 500 caratteri" maxlength="500"
+                                        message-when-too-long="A maximum of 140 characters are allowed in a tweet." placeholder="type here..." >    
+                        </lightning-textarea>
+                    </div>
+
+                    <div class="slds-col slds-size_3-of-12 slds-p-around_small slds-align_absolute-center slds-size_small">
+                        <lightning-button  variant="brand" flexibility="grow" label="Vai al documento" onclick={openDocument} class="button-verifica" name={type.Url_Documento__c}></lightning-button>
+                    </div>
+
+              
+
+                </div>
+
+                    <div class="slds-grid">
+                        <div class="slds-col slds-size_1-of-12 slds-p-around_small">
+
+                        </div>
+                        <div class="slds-col slds-size_4-of-12 slds-p-vertical_small slds-p-right_small slds-m-right_x-small">
+                         <lightning-button data-id={type.Id} label="SALVA" id={type.Id} onclick={updateUrl} name={type.Id} class="button-save"></lightning-button>
+
+                         </div>
+                    </div>
+
+            </div> 
+        </template>
+    </lightning-card><hr >
+    </template> 
+    </template>
+
+    <template if:true={recordListDocumentAllBlockH}>
+        <template if:true={boolViewH}>
+        <lightning-card><h3 slot="title">Finalità del finanziamento</h3>
+        <template for:each={recordListDocumentAllBlockH} for:item="type"> 
+
+            <div class="c-container " key={type.DocumentType__c} >
+                <div class="slds-grid">
+                    <div class="slds-col slds-size_1-of-12 slds-p-around_small center-icon">
+                        <lightning-icon if:true={type.boolUrlApproval}   icon-name="action:upload" alternative-text="Approved" class="slds-align_absolute-center approval-icon" ></lightning-icon>
+                        <lightning-icon if:true={type.boolUrlStandBy}   icon-name="utility:warning" alternative-text="Warning!" variant="warning" class="slds-align_absolute-center standby-icon"  ></lightning-icon>
+                    </div>
+                    <div class="slds-col slds-size_4-of-12 slds-p-vertical_small slds-p-right_small">
+                        <div><div if:true={type.Obbligatorio__c} ><h2 class="editObb" >*</h2></div><p class="p-document-name">&nbsp;&nbsp;{type.DocumentTypeNameFormula__c}</p></div>
+                        <lightning-file-upload            
+                                
+                                variant="brand"
+                                name={type.Id}
+                                accept={acceptedFormats}
+                                record-id={recordId}
+                                onuploadfinished={handleUploadFinished}
+                                aria-required="true"
+                                multiple>
+                        </lightning-file-upload>                               
+                    </div>
+                    
+                </div>
+                <div class="slds-grid">
+                    <div class="slds-col slds-size_1-of-12">
+                    </div>
+                    <div class="slds-col slds-size_4-of-12 slds-p-vertical_small slds-p-right_small">
+                        <lightning-textarea class="textareaUpload" onchange={onchangeButton} name={type.Id} value={type.Commento_Sales_Support__c}  label="Inserire nota supplementare, max 500 caratteri" maxlength="500"
+                                        message-when-too-long="A maximum of 140 characters are allowed in a tweet." placeholder="type here..." >    
+                        </lightning-textarea>
+                    </div>
+
+                    <div class="slds-col slds-size_3-of-12 slds-p-around_small slds-align_absolute-center slds-size_small">
+                        <lightning-button  variant="brand" flexibility="grow" label="Vai al documento" onclick={openDocument} class="button-verifica" name={type.Url_Documento__c}></lightning-button>
+                    </div>
+
+               
+
+                </div>
+
+                    <div class="slds-grid">
+                        <div class="slds-col slds-size_1-of-12 slds-p-around_small">
+
+                        </div>
+                        <div class="slds-col slds-size_4-of-12 slds-p-vertical_small slds-p-right_small slds-m-right_x-small">
+                         <lightning-button data-id={type.Id} label="SALVA" id={type.Id} onclick={updateUrl} name={type.Id} class="button-save"></lightning-button>
+
+                         </div>
+                    </div>
+
+            </div> 
+        </template>
+                               
+                           
+    </lightning-card><hr >
+    </template> 
+    </template>
+
+    <template if:true={recordListDocumentAllBlockI}>
+        <template if:true={boolViewI}>
+        <lightning-card><h3 slot="title">Contratto</h3>
+        <template for:each={recordListDocumentAllBlockI} for:item="type"> 
+
+            <div class="c-container " key={type.DocumentType__c} >
+                <div class="slds-grid">
+                    <div class="slds-col slds-size_1-of-12 slds-p-around_small center-icon">
+                        <lightning-icon if:true={type.boolUrlApproval}   icon-name="action:upload" alternative-text="Approved" class="slds-align_absolute-center approval-icon" ></lightning-icon>
+                        <lightning-icon if:true={type.boolUrlStandBy}   icon-name="utility:warning" alternative-text="Warning!" variant="warning" class="slds-align_absolute-center standby-icon"  ></lightning-icon>
+                    </div>
+                    <div class="slds-col slds-size_4-of-12 slds-p-vertical_small slds-p-right_small">
+                        <div><div if:true={type.Obbligatorio__c} ><h2 class="editObb" >*</h2></div><p class="p-document-name">&nbsp;&nbsp;{type.DocumentTypeNameFormula__c}</p></div>
+                        <lightning-file-upload            
+                                
+                                variant="brand"
+                                name={type.Id}
+                                accept={acceptedFormats}
+                                record-id={recordId}
+                                onuploadfinished={handleUploadFinished}
+                                aria-required="true"
+                                multiple>
+                        </lightning-file-upload>                               
+                    </div>
+                   
+                   
+                </div>
+                <div class="slds-grid">
+                    <div class="slds-col slds-size_1-of-12">
+                    </div>
+                    <div class="slds-col slds-size_4-of-12 slds-p-vertical_small slds-p-right_small">
+                        <lightning-textarea class="textareaUpload" onchange={onchangeButton} name={type.Id} value={type.Commento_Sales_Support__c}  label="Inserire nota supplementare, max 500 caratteri" maxlength="500"
+                                        message-when-too-long="A maximum of 140 characters are allowed in a tweet." placeholder="type here..." >    
+                        </lightning-textarea>
+                    </div>
+
+                    <div class="slds-col slds-size_3-of-12 slds-p-around_small slds-align_absolute-center slds-size_small">
+                        <lightning-button  variant="brand" flexibility="grow" label="Vai al documento" onclick={openDocument} class="button-verifica" name={type.Url_Documento__c}></lightning-button>
+                    </div>
+
+
+                </div>
+
+                    <div class="slds-grid">
+                        <div class="slds-col slds-size_1-of-12 slds-p-around_small">
+
+                        </div>
+                        <div class="slds-col slds-size_4-of-12 slds-p-vertical_small slds-p-right_small slds-m-right_x-small">
+                         <lightning-button data-id={type.Id} label="SALVA" id={type.Id} onclick={updateUrl} name={type.Id} class="button-save"></lightning-button>
+
+                         
+                         </div>
+                    </div>
+
+            </div> 
+        </template>
+                        
+                    
+                                            
+        
+     
+    </lightning-card><hr >
+    </template> 
+    </template>
+ 
+</template> -->

@@ -1,0 +1,67 @@
+<template>
+  <!--Use template if:true to display/hide popup based on isModalOpen value-->
+  <template if:true={isModalOpen}>
+    <!-- Modal/Popup Box LWC starts here -->
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+      <template if:true={showSpinner} data-id="spinnerSectionModal" tabindex="-1" class="slds-modal slds-fade-in-open slds-backdrop mro-modal-small">
+        <lightning-spinner alternative-text="Loading" variant="brand" size="large"></lightning-spinner>
+      </template>
+      <div class="slds-modal__container">
+        <!-- Modal/Popup Box LWC header here -->
+        <header class="slds-modal__header">
+          <button class="slds-button slds-button_icon slds-modal__close" title="Close" onclick={closeModal}>
+            <lightning-icon icon-name="utility:close"
+                            alternative-text="close"
+                            variant="inverse"
+                            size="small" >
+            </lightning-icon>
+            <span class="slds-assistive-text">Close</span>
+          </button>
+          <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">{header}</h2>
+        </header>
+        <!-- Modal/Popup Box LWC body starts here -->
+        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+          <div class="slds-align_absolute-center">
+            <lightning-layout vertical-align="center" class="large" multiple-rows="true">
+              <lightning-layout-item size="12">
+                <div class="slds-text-heading_small slds-text-align_center">
+                  <b>{descriptionFile}</b>
+                </div>
+                <br>
+                <lightning-input type="text"
+                                 name="documentNameInput"
+                                 data-id="documentNameInput"
+                                 value={defaultFileName}
+                                 label={labelFile}
+                                 max-length="125"
+                >
+                </lightning-input>
+                <br>
+              </lightning-layout-item>
+              <lightning-layout-item size="12" if:true={isDocIdentitaRef}>
+                <lightning-record-edit-form record-id={selectedContactId} object-api-name="Contact" data-id="formDocRef" onerror={handleErrorBP} onsuccess={handleSuccess}>
+                    <div class="slds-icon_container slds-clearfix slds-icon-utility-info_alt slds-m-bottom_small" title="info_alt">
+                      <svg class="slds-icon slds-float_left slds-m-right_x-small slds-icon-text-default slds-icon_small" aria-hidden="true">
+                        <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#info_alt"></use>
+                      </svg>
+                      <p class="slds-align_absolute-center slds-text-color_error"><b>Per poter effettuare una videoconferenza bisogna inserire necessariamente o la carta di identità o il passaporto.</b></p>
+                    </div>
+                    <lightning-input-field data-id="formDocReferente"  required field-name="Tipo_Documento__c"></lightning-input-field>
+                    <lightning-input-field data-id="formDocReferente"  required field-name="Numero_Documento__c"></lightning-input-field>
+                    <lightning-input-field data-id="formDocReferente"  required field-name="Data_Rilascio__c"></lightning-input-field>
+                    <lightning-input-field data-id="formDocReferente"  required field-name="Data_Scadenza__c"></lightning-input-field>
+                    <lightning-input-field data-id="formDocReferente"  required field-name="Luogo_Rilascio__c"></lightning-input-field>
+                    <lightning-input-field data-id="formDocReferente"  required field-name="Paese_Rilascio__c"></lightning-input-field>
+                </lightning-record-edit-form>
+              </lightning-layout-item>  
+            </lightning-layout>
+          </div>
+        </div>
+        <!-- Modal/Popup Box LWC footer starts here -->
+        <footer class="slds-modal__footer">
+          <lightning-button label={labelBottone} variant="brand" onclick={aggiungiBtnClick}></lightning-button>
+        </footer>
+      </div>
+    </section>
+  </template>
+</template>

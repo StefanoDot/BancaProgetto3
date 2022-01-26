@@ -1,0 +1,76 @@
+<!--
+ - Created by mocan on 17/06/2021.
+ -->
+
+<!-- Document List -->
+<template>
+  <lightning-layout>
+  <lightning-layout-item size="12">
+  <template if:true={documentArray}>
+    <!-- Table starts -->
+    <div class="slds-p-around_x-small" style="margin-top: 5px;margin-bottom: 5px;">
+      <div style="height: 300px">                    
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered " >
+          <thead>
+            <tr class="slds-line-height_reset">
+              <th scope="col" class="slds-truncate slds-text-align_center" style="width:15rem">
+                <div class="slds-truncate" title="Stato del Documento">Stato del Documento</div>
+              </th> 
+              <th scope="col" class="slds-truncate slds-text-align_center" style="width:30rem">
+                <div class="slds-truncate" title="Nome del Documento">Nome del Documento</div>
+              </th>
+              <th scope="col" class="slds-truncate slds-text-align_center" style="width:30rem">
+                <div class="slds-truncate " title="Collegamento al Documento">Collegamento al Documento</div>
+              </th>
+              <th scope="col" class="slds-truncate slds-text-align_center" style="width:30rem">
+                <div if:true={showVerificaLabel} class="slds-truncate" title="Verifica Sales Support">Verifica Sales Support</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+          
+          <template for:each={documentArray} for:item=document>                                                                                                            
+            <tr key={document.id} class="slds-hint-parent">
+              <td role="gridcell" class="slds-cell-wrap slds-align_absolute-center responsiveHide" data-label="Icon">
+                <lightning-icon if:true={document.isUploadedSuccess} size="medium" icon-name="action:approval" alternative-text="Approved" ></lightning-icon>
+                <lightning-icon if:true={document.isUploadedError} size="large" icon-name="utility:warning" alternative-text="Warning!" variant="warning"></lightning-icon>
+                <lightning-icon if:true={document.isVerificaOK} size="medium" icon-name="action:update_status" alternative-text="update status!"></lightning-icon>
+                <lightning-icon if:true={document.isDaRicaricare} size="large" icon-name="utility:replace" alternative-text="Reload"></lightning-icon>
+                <lightning-icon if:true={document.isWaiting} size="large" icon-name="utility:spinner" alternative-text="Reload"></lightning-icon>
+              </td>					
+              <td role="gridcell" class="slds-cell-wrap responsiveHide">
+                <div class="slds-align_absolute-center" key={document.id}>{document.File_Name__c}</div>
+              </td>
+              <td role="gridcell" class="slds-cell-wrap responsiveHide" data-label="Quantity" >
+                <lightning-button  if:true={document.Url_Documento__c}  variant="brand" label="Vai al Documento" onclick={openDocument} class="button-verifica slds-align_absolute-center" name={document.Url_Documento__c}></lightning-button>
+              </td>
+              <td role="gridcell" class="slds-cell-wrap responsiveHide">
+                <div if:true={document.Url_Documento__c} class="slds-align_absolute-center">
+                  <lightning-combobox
+                          if:true={showVerificaField}
+                          name={document.Id}
+                          value={document.Verifica_Sales_Support__c}
+                          placeholder={document.Verifica_Sales_Support__c}
+                          options={verificaSalesSupportOptions}
+                          onchange={handleVerificaSalesSupportChange}
+                          disabled={document.isVerificaDisabled}
+                          variant="label-hidden">
+                </lightning-combobox>
+                </div>
+              </td>
+            </tr>                                         
+          </template>                                                       
+          </tbody>
+        </table>
+      </div>
+    </div>    
+    <!-- Table Ends -->
+  </template>
+
+  <template if:true={showSpinner} data-id="spinnerSectionModal" tabindex="-1"
+            class="slds-modal slds-fade-in-open slds-backdrop mro-modal-small">
+    <lightning-spinner alternative-text="Loading" variant="brand" size="large"></lightning-spinner>
+  </template>
+</lightning-layout-item>
+</lightning-layout>
+</template>

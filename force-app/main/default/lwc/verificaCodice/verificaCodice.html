@@ -1,0 +1,126 @@
+<template>
+    <template if:true={listaDatiContatto} for:each={listaDatiContatto} for:item="type" >
+   
+     
+        <lightning-layout    vertical-align="stretch set-layout" key={type.Id} class="x-large">
+            <lightning-layout-item flexibility="auto"     >
+                <div class="custom-box" >
+                    <lightning-input type="Numero Di Telefono"  label="NUMERO DI TELEFONO" value={type.Phone}   ></lightning-input>
+                    
+                </div>
+            </lightning-layout-item>
+             <lightning-layout-item flexibility="auto"      >
+                <div class="custom-box2">
+                   <lightning-button  class="stretchButton slds-button custom-btn"   label="Invio Codice"  onclick={onclickSendPhone}   ></lightning-button>        
+                </div>
+            </lightning-layout-item>
+        </lightning-layout>
+
+     <lightning-layout vertical-align="stretch set-layout" key={type.Id} class="x-large">
+            <lightning-layout-item flexibility="auto"      >
+
+                <div class="custom-box">
+                    <lightning-input type="Email"  label="EMAIL"   value={type.Email}  ></lightning-input>
+                    
+                </div>
+            </lightning-layout-item>
+             <lightning-layout-item flexibility="auto"      >
+
+                <div class="custom-box2">
+                   <lightning-button  class="stretchButton slds-button custom-btn"   label="Invio Codice" onclick={onclickSendEmail}    ></lightning-button>
+                    
+                </div>
+            </lightning-layout-item>
+           
+
+
+
+        </lightning-layout>
+ 
+
+    
+        
+        <lightning-layout vertical-align="stretch set-layout" key={type.Id} class="x-large">
+
+
+
+            <lightning-layout-item flexibility="auto"      >
+
+                <div class="custom-box">
+                    <lightning-input type="Inserire Codice Telefono"  label="INSERIRE CODICE TELEFONO"    ></lightning-input>
+                    
+                </div>
+            </lightning-layout-item>
+             <lightning-layout-item flexibility="auto"      >
+
+                <div class="custom-box2">
+                   <lightning-button  class="stretchButton slds-button custom-btn"   label="Verifica Codice Telefono"  onclick={onclickVerificationfiPhone}    ></lightning-button>
+                    
+                </div>
+            </lightning-layout-item>
+           
+
+
+
+        </lightning-layout>
+    
+    
+        
+        <lightning-layout vertical-align="stretch set-layout" key={type.Id} class="x-large">
+
+
+
+            <lightning-layout-item flexibility="auto"      >
+
+                <div class="custom-box">
+                    <lightning-input type="Inserire Codice Email"  label="INSERIRE CODICE EMAIL"    ></lightning-input>
+                    
+                </div>
+            </lightning-layout-item>
+             <lightning-layout-item flexibility="auto"      >
+
+                <div class="custom-box2">
+                   <lightning-button  class="stretchButton slds-button custom-btn"   label="Verifica Codice Email" onclick={onclickVerificationfiPhone}        ></lightning-button>
+                    
+                </div>
+            </lightning-layout-item>
+           
+
+
+
+        </lightning-layout>
+    
+        
+        
+        <lightning-layout vertical-align="stretch set-layout" key={type.Id} class="x-large">
+
+
+
+            <lightning-layout-item flexibility="auto"      >
+
+                <div class="custom-box">
+                    <lightning-input type="text"  label="NUMERO DOCUMENTO"    ></lightning-input>
+                    
+                </div>
+            </lightning-layout-item>
+             <lightning-layout-item flexibility="auto"      >
+
+                <div class="custom-box2">
+                   <lightning-button  class="stretchButton slds-button custom-btn"   label="SALVA" variant="success" onclick={onclickSave}       ></lightning-button>
+                    
+                </div>
+            </lightning-layout-item>
+           
+
+
+
+        </lightning-layout>
+    
+        <div key={type.Id} class="afterPositionButton">
+    
+            <lightning-button variant="destructive" label="Cancel"  onclick={onClickCancel} class="slds-m-left_x-small"></lightning-button>
+           
+        </div>
+
+    </template>
+</template>

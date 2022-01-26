@@ -1,0 +1,77 @@
+<template>    
+    <template for:each={uniqueArray} for:item="element">
+        <div key={element.key}>
+            <p>{element.value.DocumentTypeNameFormula__c}</p>
+            <template for:each={element.value} for:item="document">
+                <h3 if:true={document.titleCondition} key={document.id} slot="title">{document.DocumentBlockFormula__c}</h3>
+                <div class="c-container" key={document.DocumentType__c}>
+                    <div>
+                        <p class="p-document-name">&nbsp;&nbsp;&nbsp;&nbsp;{document.DocumentTypeNameFormula__c}</p>
+                    </div>
+                    <c-document-list document-type={document.DocumentType__c} doc-array={finalDocArray}></c-document-list>
+
+                    <div class="slds-grid">
+                        <div class="slds-col slds-size_1-of-12 slds-col slds-p-around_small center-icon"></div>
+                        <div class="slds-col slds-size_4-of-12 slds-p-vertical_small slds-p-right_small">
+                            <lightning-textarea class="textareaUpload"  disabled={document.isVerificaDisabled} onchange={onchangeButton} name={document.Id} value={document.Commento_Sales_Support__c}  label={document.labelComment} maxlength="500"
+                                                message-when-too-long="E' consentito inserire massimo 140 caratteri nella nota." placeholder={document.placeComment} >
+                            </lightning-textarea>
+                        </div>
+
+                        <div class="slds-col slds-size_4-of-12 slds-p-top_medium slds-p-right_small slds-align_absolute-right slds-size_small" ></div>
+
+                        <div class="slds-col slds-size_3-of-12 slds-p-top_x-large slds-p-right_small slds-align_absolute-right slds-size_small">
+                            <lightning-button  if:true={document.Url_Documento__c}  variant="brand" flexibility="grow" label="Vai al Documento" onclick={openDocument} class="button-verifica slds-align_absolute-right" name={document.Url_Documento__c}></lightning-button>
+                        </div>
+                    </div>
+
+                    <div class="slds-grid">
+                        <div class="slds-col slds-size_1-of-12 slds-p-around_small"></div>
+                        <div class="slds-col slds-size_2-of-12 slds-p-vertical_small slds-p-right_small slds-m-right_x-small">
+                            <lightning-button  if:false={document.isVerificaDisabled}  disabled={isRecdocumentRO} data-id={document.Id} label="SALVA" id={document.Id} onclick={updateUrl} name={document.Id} class="button-save"></lightning-button>
+                        </div>
+                        <div class="slds-col slds-size_4-of-12 slds-p-around_small"></div>
+                        
+                        <div class="slds-col slds-size_3-of-12 slds-size_small slds-p-around_small">
+                            <lightning-button data-id="Elimina"
+                                              label="Elimina"
+                                              onclick={removeFiles}
+                                              name={document.DocumentType__c}
+                                              variant="brand"
+                                              class="button-verifica slds-align_absolute-center">
+                            </lightning-button>
+                        </div>
+                        <div class="slds-col slds-size_1-of-12 slds-size_small slds-p-around_small">
+                            <lightning-button data-id="Sostituisci"
+                                              label="Sostituisci"
+                                              onclick={replaceFiles}
+                                              name={document.DocumentType__c}
+                                              variant="brand"
+                                              class="button-verifica slds-float_right">
+                            </lightning-button>
+                        </div>
+                    </div>
+
+                    <div if:true={showFileUpload}>
+                        <lightning-file-upload
+                          label="fileUpload"
+                          name={document.Id}
+                          accept={acceptedFormats}
+                          record-id={recordId}
+                          disabled={document.isUploadDisabled}
+                          onuploadfinished={handleUploadFinished}
+                          aria-required="true"
+                          multiple>
+                        </lightning-file-upload>
+                    </div>
+                </div>
+            </template>
+        </div>
+        
+    </template>
+    <template if:true={isModalOpen}>
+        <c-modal-popup-lwc ismodalopen={isModalOpen} showelimina={showElmina} documentlist={finalDocArray} documenttype={documentTypeToPass}
+                            onclosemodalevnt={handleCloseModal} onreplaceevent={handleReplace} ></c-modal-popup-lwc>
+    </template>
+    
+</template>

@@ -1,0 +1,61 @@
+.editObb{
+   float: left;
+   padding-right:"7px";
+   color: red;
+}
+
+.btnText-area{
+ display: none;
+ visibility: hidden;
+ 
+}
+
+.center-icon{
+   padding-top:32px;
+   
+}
+
+.button-notifica{
+   font-size: 11px;
+   width: 100% !important;
+}
+
+.button-verifica{
+   font-size: 12px;
+}
+
+.button-save {
+   position: relative;
+   float: right;
+   margin-right: 0;
+   /*  margin: 3px; */
+   /* background-color: white; */
+   /* height: 22px; 
+   width: 280px;*/
+}
+
+.c-container {
+   background-color: whitesmoke !important;
+   border: white solid 10px !important;
+   border-radius: 20px !important;
+}
+
+.approval-icon {
+   width: 50px !important;
+   height: 50px !important;
+}
+/*
+.standby-icon {
+   width: 25px !important;
+   height: 25px !important;
+}
+
+img .slds-icon {
+   width: 25px !important;
+   height: 25px !important;
+}*/
+
+.p-document-name {
+   font-size: 16px !important;
+   font-weight: 700 !important;
+}

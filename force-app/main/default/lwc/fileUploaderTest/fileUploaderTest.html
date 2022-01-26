@@ -1,0 +1,194 @@
+<template>
+    <template if:true={isModalOpen}>
+        <div class="demo-only" style="height: 640px;">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Richiedi Approvazione</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_large" id="modal-content-id-1">
+                        
+                        <div if:false={disableRichiedi}><h2><b>Sei sicuro di voler procedere?</b></h2><br/></div>
+                        
+                        <template if:true={showLoadingSpinner}>
+                            <div class="slds-text-body_small slds-text-color_error slds-align_absolute-center">Caricamento...
+                                <img src="/auraFW/resources/aura/images/spinner.gif" class="spinner-img" alt="Loading" />
+                            </div>
+                        </template>
+                        
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning-button label="Chiudi" variant="destructive" onclick={closeModal}></lightning-button>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <lightning-button if:false={messageNDG} label="Conferma" variant="success" disabled={disableRichiedi} onclick={getNDG}></lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </template>
+
+    <template if:true={recordListDocumentAllBlock}>
+       <template  for:each={recordListDocumentAllBlock} for:item="docArray">    
+           <lightning-card key={docArray}>
+               <template  for:each={docArray} for:item="type">
+               <h3 if:true={type.titleCondition} key={type.id} slot="title">{type.DocumentBlockFormula__c}</h3>  
+                <div class="c-container " key={type.DocumentType__c} >
+                    <div class="slds-grid">
+                        <div class="slds-col slds-size_1-of-12 slds-p-around_small center-icon">
+                            <lightning-icon if:true={type.boolUrlApproval}   icon-name="action:upload" alternative-text="Approved!" class="slds-align_absolute-center approval-icon" ></lightning-icon>
+                            <lightning-icon if:true={type.boolUrlStandBy}   icon-name="utility:warning" alternative-text="Warning!" variant="warning" class="slds-align_absolute-center standby-icon"  ></lightning-icon>
+                            <lightning-icon if:true={type.boolLoading}   icon-name="utility:spinner" alternative-text="Fai refresh!" class="slds-align_absolute-center reset_password-icon" ></lightning-icon>
+                        </div>
+                        <div class="slds-col slds-size_4-of-12 slds-p-vertical_small slds-p-right_small">
+                            <div>
+                                <div if:true={type.Obbligatorio__c} ><h2 class="editObb" >*</h2></div><p class="p-document-name">&nbsp;&nbsp;{type.DocumentTypeNameFormula__c}</p></div>
+                                
+                                <template if:false={type.isDocEasyPlus}>
+                                <template if:true={type.boolServizi}>
+                                <lightning-file-upload            
+                                    variant="brand"
+                                    name={type.Id}
+                                    accept={acceptedFormats}
+                                    record-id={recordId}
+                                    disabled={isErogazioneServizi}
+                                    onuploadfinished={handleUploadFinished}
+                                    aria-required="true"
+                                    multiple>
+                            </lightning-file-upload>  
+                        </template>
+                        <template if:false={type.boolServizi}>
+                            <lightning-file-upload                   
+                            variant="brand"
+                            name={type.Id}
+                            accept={acceptedFormats}
+                            record-id={recordId}
+                            disabled={isRecTypeRO}
+                            onuploadfinished={handleUploadFinished}
+                            aria-required="true"
+                            multiple>
+                    </lightning-file-upload>   
+                </template>
+                </template>
+
+                <template if:true={type.isDocEasyPlus}>
+                    <template if:true={type.boolServizi}>
+                    <lightning-file-upload            
+                        variant="brand"
+                        name={type.Id}
+                        accept={acceptedFormats}
+                        record-id={recordId}
+                        disabled={fidimedAndErogazione}
+                        onuploadfinished={handleUploadFinished}
+                        aria-required="true"
+                        multiple>
+                </lightning-file-upload>  
+            </template>
+            <template if:false={type.boolServizi}>
+                <lightning-file-upload                   
+                variant="brand"
+                name={type.Id}
+                accept={acceptedFormats}
+                record-id={recordId}
+                disabled={isNotFidimed}
+                onuploadfinished={handleUploadFinished}
+                aria-required="true"
+                multiple>
+        </lightning-file-upload>   
+    </template>
+    </template>
+
+                        </div>
+                        <div class="slds-col slds-size_4-of-12"></div>
+                        <div class="slds-col slds-size_3-of-12 slds-p-top_x-large slds-p-right_small slds-align_absolute-right slds-size_small">
+                            <template if:false={type.boolViewModuloRichiesta}>
+                                <template if:false={type.isDocEasyPlus}>
+                                    <lightning-combobox
+                                    if:true={type.Url_Documento__c}
+                                    name={type.Id}
+                                    label='Verifica Sales Support'
+                                    value={type.Verifica_Sales_Support__c}
+                                    placeholder={type.Verifica_Sales_Support__c}
+                                    options={options}
+                                    onchange={handleChange} 
+                                    disabled={isComboboxDisabled}>
+                                </lightning-combobox>
+                                     </template>
+                                <template if:true={type.isDocEasyPlus}>
+                                 <lightning-combobox
+                                if:true={type.Url_Documento__c}
+                                name={type.Id}
+                                label='Verifica Sales Support'
+                                value={type.Verifica_Sales_Support__c}
+                                placeholder={type.Verifica_Sales_Support__c}
+                                options={options}
+                                onchange={handleChange} 
+                                disabled={stopFidimed}>
+                             </lightning-combobox>
+                             </template>
+</template>
+<template if:true={type.boolViewModuloRichiesta}>
+    <lightning-combobox
+   if:true={type.Url_Documento__c}
+   name={type.Id}
+   label='Verifica Sales Support/Inside Sales'
+   value={type.Verifica_Sales_Support__c}
+   placeholder={type.Verifica_Sales_Support__c}
+   options={options}
+   onchange={handleChange} 
+   disabled={noteVisbile}>
+</lightning-combobox>
+</template>
+                       </div>
+                </div>
+                <div class="slds-grid">
+                    <div class="slds-col slds-size_1-of-12 slds-col slds-size_1-of-12 slds-p-around_small center-icon">
+                    </div>
+                    <div class="slds-col slds-size_4-of-12 slds-p-vertical_small slds-p-right_small">
+                        <template if:true={isRecTypeRO}>
+                            <lightning-textarea class="textareaUpload"  disabled="true" onchange={onchangeButton} name={type.Id} value={type.Commento_Sales_Support__c}  label={labelComment} maxlength="500"
+                                            message-when-too-long="A maximum of 140 characters are allowed in a tweet." placeholder={placeComment} >    
+                            </lightning-textarea>
+                           </template>
+   
+                           <template if:false={isRecTypeRO}>
+                               <lightning-textarea class="textareaUpload"  disabled={noteVisbile} onchange={onchangeButton} name={type.Id} value={type.Commento_Sales_Support__c}  label={labelComment} maxlength="500"
+                                               message-when-too-long="A maximum of 140 characters are allowed in a tweet." placeholder={placeComment} >    
+                               </lightning-textarea>
+                              </template>
+                    </div>
+                    <template if:true={isNotificaTeritorial}>
+                        <div class="slds-col slds-size_4-of-12 slds-p-top_medium slds-p-right_small slds-align_absolute-right slds-size_small" >
+                         <br/>
+                         <lightning-button class='button-notifica' variant="brand" if:true={type.boolViewModuloRichiesta} label="Richiedi Approvazione" id={type.Id} onclick={handleChange2} name={type.Id} disabled={isRecTypeRO} ></lightning-button>
+                     </div>
+                     </template>
+                    <div class="slds-col slds-size_3-of-12 slds-p-top_x-large slds-p-right_small slds-align_absolute-right slds-size_small">
+                        <lightning-button   if:true={type.Url_Documento__c}  variant="brand" flexibility="grow" label="Vai al documento" onclick={openDocument} class="button-verifica slds-align_absolute-right" name={type.Url_Documento__c}></lightning-button>
+                    </div>
+                               </div>
+                    <div class="slds-grid">
+                        <div class="slds-col slds-size_1-of-12 slds-p-around_small">
+                        </div>
+                        <template if:false={salvabuttonhidden}>
+                        <div class="slds-col slds-size_2-of-20 slds-p-vertical_small slds-p-right_small slds-m-right_x-small">
+                         <lightning-button  disabled={isRecTypeRO} data-id={type.Id} label="SALVA" id={type.Id} onclick={updateUrl} name={type.Id} class="button-save"></lightning-button>
+                     </div>
+                    </template>
+                     <template if:true={isVerInsSalesVisible}>
+                        <div class="slds-col slds-size_3-of-12 slds-p-top_medium slds-p-right_small slds-align_absolute-right slds-size_small"></div>
+                        <div class="slds-col slds-size_4-of-12 slds-p-top_medium slds-align_absolute-right slds-size_small" >
+                            <template if:true={type.boolViewModuloRichiesta}>
+                            <lightning-helptext  if:true={aprovaVisibile} content="ATTENZIONE! La funzionalità di richiesta NDG è stata disabilitata. Contattare l'amministratore di sistema."></lightning-helptext>
+                        </template>
+                            <lightning-button class='button-verifica slds-size_small'
+                             variant="brand" flexibility="grow" disabled={aprovaVisibile}
+                             padding="around-small" if:true={type.boolViewModuloRichiesta} label="Approva" id={type.Id} onclick={openModal} name={type.Id} ></lightning-button>
+                        </div>
+                    </template>
+                    </div>
+            </div> 
+        </template>
+    </lightning-card>
+    </template> 
+</template> 
+</template>

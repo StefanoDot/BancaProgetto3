@@ -1,0 +1,46 @@
+<template>
+    
+    <template if:true={listaReferentiFirmatari} > 
+        <div class="slds-m-around_medium" >
+           
+            <lightning-combobox
+           
+            label="Firmatario"
+            value={value}
+            options={options}
+            onchange={handleChange}
+            required
+        ></lightning-combobox>
+        
+       
+        </div>
+    </template>
+  
+    <template if:true={datiref} for:each={datiref} for:item="type">
+              <hr class="margin" key={type.Id}> RIEPILOGO DATI FIRMATARIO
+        <br key={type.Id}>
+            <!-- <lightning-input type="text" name={type.Name}  label="Referente" ></lightning-input> -->
+            
+        <div key={type.Id}>
+            <!-- <lightning-input type="text" name={type.Name} label="Name" disabled value={type.Name} ></lightning-input> -->
+        <lightning-input type="Email" name={type.Email} label="EMAIL" disabled value={type.Email} ></lightning-input>
+        <lightning-input type="Phone" name={type.Phone} label="NUMERO DI TELEFONO" disabled value={type.Phone}></lightning-input>
+        
+    </div>
+
+
+</template>
+ 
+<div if:false={datiref} class="defaultPositionButton">
+    
+    <lightning-button variant="destructive" label="Cancel"  onclick={onClickCancel} class="slds-m-left_x-small"></lightning-button>
+    <lightning-button variant="success"  label="Invio Contratto"  onclick={onClickSend} class="slds-m-left_x-small"></lightning-button>
+
+</div>
+<div if:true={datiref} class="afterPositionButton">
+    
+    <lightning-button variant="destructive" label="Cancel"  onclick={onClickCancel} class="slds-m-left_x-small"></lightning-button>
+    <lightning-button variant="success"  label="Invio Contratto"  onclick={onClickSend} class="slds-m-left_x-small"></lightning-button>
+
+</div>
+</template>

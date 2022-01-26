@@ -1,0 +1,129 @@
+<template>
+    <template if:true={listaDatiContatto} for:each={listaDatiContatto} for:item="type" >
+   
+        
+        <lightning-layout    vertical-align="stretch set-layout" key={type.Id} class="x-large">
+            <lightning-spinner if:true={showSpinnerCert} alternative-text="Loading" size="medium">Loading...</lightning-spinner>
+            <lightning-layout-item flexibility="auto" class="slds-col slds-size_2-of-12"    >
+                <lightning-combobox
+                                name='prefisso-internazionale'
+                                label='PREFISSO'
+                                value={type.Prefisso_Internazionale__c}
+                                placeholder={type.Prefisso_Internazionale__c}
+                                options={options}
+                                data-id='prefisso-internazionale'
+                                required >
+                            </lightning-combobox>
+            </lightning-layout-item> 
+            <lightning-layout-item flexibility="auto" class="slds-col slds-size_1-of-12"></lightning-layout-item>
+            <lightning-layout-item flexibility="auto" class="slds-col slds-size_4-of-12"    >
+                <div class="custom-box" >
+                    <lightning-input class="lightning-input-send-phone" type="text"  label="NUMERO DI TELEFONO" value={type.MobilePhone} onchange={onchangePhone}  ></lightning-input>
+                    
+                </div>
+            </lightning-layout-item>
+            <lightning-layout-item flexibility="auto" class="slds-col slds-size_1-of-12"    ></lightning-layout-item>
+             <lightning-layout-item flexibility="auto"   class="slds-col slds-size_3-of-12"    >
+                <div class="custom-box2">
+                    <button  class="slds-button slds-button_neutral slds-button_stretch custom-btn"     onclick={onclickSendPhone}   >Invio Codice</button>        
+                </div>
+            </lightning-layout-item>
+            <lightning-layout-item flexibility="auto" class="slds-col slds-size_1-of-12"    >
+            </lightning-layout-item>
+
+        </lightning-layout>
+
+
+     <lightning-layout vertical-align="stretch set-layout" key={type.Id} class="x-large">
+        <lightning-layout-item flexibility="auto" class="slds-col slds-size_2-of-12"    ></lightning-layout-item>
+        <lightning-layout-item flexibility="auto" class="slds-col slds-size_1-of-12"></lightning-layout-item>
+            <lightning-layout-item flexibility="auto"   class="slds-col slds-size_4-of-12"    >
+
+                <div class="custom-box">
+                    <lightning-input class="lightning-input-send-email" type="Email" label="EMAIL"   value={type.Email} onchange={onchangeEmail}  ></lightning-input>
+                    
+                </div>
+            </lightning-layout-item>
+            <lightning-layout-item flexibility="auto" class="slds-col slds-size_1-of-12"    ></lightning-layout-item>
+             <lightning-layout-item flexibility="auto"   class="slds-col slds-size_3-of-12"    >
+               
+
+                <div class="custom-box2">
+                    <button  class="slds-button slds-button_neutral slds-button_stretch custom-btn"     onclick={onclickSendEmail}    >Invio Codice</button>
+                    
+                </div>
+
+            </lightning-layout-item>
+            <lightning-layout-item flexibility="auto" class="slds-col slds-size_1-of-12"    >
+            </lightning-layout-item>
+
+        </lightning-layout>
+
+        
+        <lightning-layout vertical-align="stretch set-layout" key={type.Id} class="x-large">
+            <lightning-layout-item flexibility="auto" class="slds-col slds-size_2-of-12"    ></lightning-layout-item>
+            <lightning-layout-item flexibility="auto" class="slds-col slds-size_1-of-12"></lightning-layout-item>
+            <lightning-layout-item flexibility="auto"  class="slds-col slds-size_4-of-12"     >
+
+                <div class="custom-box">
+                    <lightning-input type="text" class="lightning-input-check-phone" label="INSERIRE CODICE TELEFONO"  onchange={onchangeCodPhone}  ></lightning-input>
+                    
+                </div>
+            </lightning-layout-item>
+            <lightning-layout-item flexibility="auto" class="slds-col slds-size_1-of-12"    ></lightning-layout-item>
+             <lightning-layout-item flexibility="auto"    class="slds-col slds-size_3-of-12"   >
+                
+
+                <div class="custom-box2">
+                    <button  class="slds-button slds-button_neutral slds-button_stretch custom-btn"     onclick={onclickcheckPhone}    >Verifica Codice Telefono</button>
+                    
+                </div>
+            </lightning-layout-item>
+           
+            <lightning-layout-item flexibility="auto" class="slds-col slds-size_1-of-12"    >
+                <lightning-input class="custom-btn" if:true={type.FinServ__MobileVerified__c} type="checkbox-button"  checked disabled></lightning-input>
+            </lightning-layout-item>
+
+
+        </lightning-layout>
+    
+    
+        
+        <lightning-layout vertical-align="stretch set-layout" key={type.Id} class="x-large">
+            <lightning-layout-item flexibility="auto" class="slds-col slds-size_2-of-12"    ></lightning-layout-item>
+            <lightning-layout-item flexibility="auto" class="slds-col slds-size_1-of-12"></lightning-layout-item>
+            <lightning-layout-item flexibility="auto"   class="slds-col slds-size_4-of-12"    >
+
+                <div class="custom-box">
+                    <lightning-input type="text" class="lightning-input-check-email" label="INSERIRE CODICE EMAIL"  onchange={onchangeCodEmail}  ></lightning-input>
+                    
+                </div>
+            </lightning-layout-item>
+            <lightning-layout-item flexibility="auto" class="slds-col slds-size_1-of-12"    ></lightning-layout-item>
+             <lightning-layout-item flexibility="auto"  class="slds-col slds-size_3-of-12"     >
+
+                <div class="custom-box2">
+                    <button  class="slds-button slds-button_neutral slds-button_stretch custom-btn"  onclick={onclickcheckEmail}        >Verifica Codice Email</button>
+                    
+                </div>
+            </lightning-layout-item>
+            <lightning-layout-item flexibility="auto" class="slds-col slds-size_1-of-12"    >
+                <lightning-input class="custom-btn" if:true={type.FinServ__EmailVerified__c} type="checkbox-button"  checked disabled></lightning-input >
+            </lightning-layout-item>
+
+
+
+        </lightning-layout>
+    
+        
+        
+        
+    
+        <div key={type.Id} class="afterPositionButton">
+    
+            <lightning-button variant="destructive" label="Chiudi"  onclick={onClickCancel} class="slds-m-left_x-small"></lightning-button>
+           
+        </div>
+
+    </template>
+</template>

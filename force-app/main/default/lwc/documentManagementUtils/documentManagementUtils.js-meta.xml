@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>52.0</apiVersion>
+    <description>Helper component which contains all common methods for New Document Management functionality
+    </description>
+    <isExposed>false</isExposed>
+    <masterLabel>Document Management Utils</masterLabel>
+</LightningComponentBundle>
