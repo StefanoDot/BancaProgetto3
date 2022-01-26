@@ -1,0 +1,926 @@
+<!--
+ - Created by albi on 20/04/2019.
+ -->
+
+<aura:component description="FileUploader" implements="force:hasRecordId,flexipage:availableForRecordHome,forceCommunity:availableForAllPageTypes" access="global">
+
+    <aura:attribute name="accept" type="List" default="['.jpg', '.jpeg', '.png']"/>
+    <aura:attribute name="multiple" type="Boolean" default="true"/>
+    <aura:attribute name="disabled" type="Boolean" default="false"/>
+
+    <aura:attribute name="record" type="Object" description="The record object to be displayed"/>
+
+    <aura:attribute name="loadOpp" type="Boolean" default="false" />
+    <aura:attribute name="fieldsOpp" type="List" />
+    <aura:attribute name="recordOpp" type="Object" />
+    <aura:attribute name="simpleRecordOpp" type="Object" />
+
+    <aura:attribute name="fieldsAcc" type="List" />
+    <aura:attribute name="recordAcc" type="Object" />
+    <aura:attribute name="simpleRecordAcc" type="Object" />
+    
+    <aura:attribute name="userId" type="String" />
+    <aura:attribute name="recordUser" type="Object" />
+    <aura:attribute name="simpleRecordUser" type="Object" />
+
+    <aura:attribute name="O01" type="Boolean" default="false" access="private"/>
+    <aura:attribute name="O02" type="Boolean" default="false" access="private"/>
+    <aura:attribute name="O04" type="Boolean" default="false" access="private"/>
+    <aura:attribute name="O05" type="Boolean" default="false" access="private"/>
+    <aura:attribute name="O06" type="Boolean" default="false" access="private"/>
+    <aura:attribute name="O07" type="Boolean" default="false" access="private"/>
+    <aura:attribute name="O08" type="Boolean" default="false" access="private"/>
+    <aura:attribute name="O09" type="Boolean" default="false" access="private"/>
+    <aura:attribute name="O10" type="Boolean" default="false" access="private"/>
+    <aura:attribute name="O11" type="Boolean" default="false" access="private"/>
+    <aura:attribute name="O12" type="Boolean" default="false" access="private"/>
+    <aura:attribute name="O13" type="Boolean" default="false" access="private"/>
+    <aura:attribute name="O14" type="Boolean" default="false" access="private"/>
+    <aura:attribute name="O15" type="Boolean" default="false" access="private"/>
+    <aura:attribute name="O16" type="Boolean" default="false" access="private"/>
+    <aura:attribute name="O17" type="Boolean" default="false" access="private"/>
+    <aura:attribute name="O18" type="Boolean" default="false" access="private"/>
+    <aura:attribute name="O19" type="Boolean" default="false" access="private"/>
+    <aura:attribute name="O20" type="Boolean" default="false" access="private"/>
+    <aura:attribute name="O21" type="Boolean" default="false" access="private"/>
+    <aura:attribute name="O22" type="Boolean" default="false" access="private"/>
+    <aura:attribute name="O23" type="Boolean" default="false" access="private"/>
+    <aura:attribute name="O24" type="Boolean" default="false" access="private"/>
+    <aura:attribute name="O25" type="Boolean" default="false" access="private"/>
+    <aura:attribute name="O26" type="Boolean" default="false" access="private"/>
+    <aura:attribute name="O27" type="Boolean" default="false" access="private"/>
+    <aura:attribute name="O28" type="Boolean" default="false" access="private"/>
+    <aura:attribute name="O29" type="Boolean" default="false" access="private"/>
+
+    <aura:attribute name="error" type="String" description="The record object to be displayed"/>
+
+    <aura:attribute name="oppMultipicklistApiName" type="String" default="" required="true"
+                    description="Name of the Opportunity multipicklist containing the name of the uploaded documents types" />
+    <aura:attribute name="accMultipicklistApiName" type="String" default="" required="true"
+                    description="Name of the Account multipicklist containing the name of the uploaded documents types" />
+    <aura:attribute name="acceptLightningPageBuilderInput" type="String" default="'.jpg', '.jpeg', '.png'" required="true" />
+
+
+    <aura:handler name="init" action="{!c.onInit}" value="{!this}" />
+
+
+    <!-- RECORD DATA OPPORTUNITY -->
+    <aura:if isTrue="{!v.loadOpp}">
+        <force:recordData recordId="{!v.recordId}" aura:id="recordHandlerOpp"
+                          targetRecord ="{!v.recordOpp}"
+                          targetFields ="{!v.simpleRecordOpp}"
+                          targetError="{!v.error}"
+                          mode="EDIT"
+                          recordUpdated="{!c.recordUpdated}"
+                          fields="{!v.fieldsOpp}" />
+    </aura:if>
+
+    <!-- AURA IF NECESSARIO, ALTRIMENTI  force:recordata dell'account non viene inizializzato -->
+    <aura:if isTrue="{!v.simpleRecordOpp.AccountId}">
+        <!-- RECORD DATA ACCOUNT -->
+        <force:recordData recordId="{!v.simpleRecordOpp.AccountId}" aura:id="recordHandlerAcc"
+                          targetRecord ="{!v.recordAcc}"
+                          targetFields ="{!v.simpleRecordAcc}"
+                          mode="EDIT"
+                          recordUpdated="{!c.recordUpdated}"
+                          fields="{!v.fieldsAcc}"/>
+
+    </aura:if>
+
+    <aura:if isTrue="{!v.userId}">
+        <!-- RECORD DATA USER-->
+        <force:recordData recordId="{!v.userId}" aura:id="recordHandlerUser"
+                          targetRecord ="{!v.recordUser}"
+                          targetFields ="{!v.simpleRecordUser}"
+                          mode="VIEW"
+                          fields="Profile.Name, ProfileId"/>
+    </aura:if>
+
+
+<!--
+    <aura:if isTrue="{! !and(v.simpleRecordOpp, v.simpleRecordAcc, v.simpleRecordUser)}">
+        <lightning:spinner />
+    </aura:if>
+-->
+
+<div class="container"> <!--da cancellare a fine-->prima card
+    
+
+    <lightning:card title="{!$Label.c.UploadDocumentazione_FirstStep}" class="slds-m-bottom_xx-large">
+
+        <lightning:layout verticalAlign="center" multipleRows="true">
+                    <lightning:layoutItem size="5">
+                        <lightning:fileUpload  name="RichiestaFinanziamento" aura:id="RichiestaFinanziamento"
+                                               label= "[01] Modulo Richiesta Finanziamento"
+                                               multiple="{!v.multiple}"
+                                               accept="{!v.accept}"
+                                               recordId="{!v.recordId}"
+                                               onuploadfinished="{! c.handleUploadFinished }"/>
+                                               
+                    <lightning:buttonMenu alternativeText="Toggle menu" >
+                        <lightning:menuItem label="Menu Item 1" value="menuitem1" iconName="utility:table" />
+                    </lightning:buttonMenu>
+
+                    </lightning:layoutItem>
+                    
+                    
+                    
+
+                    <lightning:layoutItem size="1">
+                        <aura:if isTrue="{!v.simpleRecordOpp.X01_Richiesta_di_Finanziamento__c}">
+                            <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                            class="icon-check slds-m-top_medium"/>
+                        </aura:if>
+                    </lightning:layoutItem>
+
+                    
+
+                    <lightning:layoutItem size="5">
+                        <lightning:fileUpload  name="DocCFLegaleRappresentanteProcuratore" aura:id="DocCFLegaleRappresentanteProcuratore"
+                                               label= "[02] Doc/CF Legale Rappr/Procuratore"
+                                               multiple="{!v.multiple}"
+                                               accept="{!v.accept}"
+                                               recordId="{!v.recordId}"
+                                               onuploadfinished="{! c.handleUploadFinished }"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="1">
+                        <aura:if isTrue="{!v.simpleRecordOpp.X02_Doc_CF_Legale_Rappr_Procuratore__c}">
+                            <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                            class="icon-check slds-m-top_medium"/>
+                        </aura:if>
+                    </lightning:layoutItem>
+
+                    <lightning:layoutItem size="5">
+                        <lightning:fileUpload  name="DocCFLegaleTitolareEffettivo" aura:id="DocCFLegaleTitolareEffettivo"
+                                               label= "[03] Doc/CF Legale Titolare Effettivo"
+                                               multiple="{!v.multiple}"
+                                               accept="{!v.accept}"
+                                               recordId="{!v.recordId}"
+                                               onuploadfinished="{! c.handleUploadFinished }"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="1">
+                        <aura:if isTrue="{!v.simpleRecordOpp.X03_Doc_CF_Legale_Titolare_Effettivo__c}">
+                            <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                            class="icon-check slds-m-top_medium"/>
+                        </aura:if>
+                    </lightning:layoutItem>
+
+                    <lightning:layoutItem size="5">
+                        <lightning:fileUpload  name="Privacy" aura:id="Privacy"
+                                               label= "[04] Privacy"
+                                               multiple="{!v.multiple}"
+                                               accept="{!v.accept}"
+                                               recordId="{!v.recordId}"
+                                               onuploadfinished="{! c.handleUploadFinished }"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="1">
+                        <aura:if isTrue="{!v.simpleRecordOpp.X04_Privacy__c}">
+                            <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                            class="icon-check slds-m-top_medium"/>
+                        </aura:if>
+                    </lightning:layoutItem>
+            </lightning:layout>
+
+    </lightning:card>
+  
+    <!-- Other components -->
+  </div>
+
+
+
+  <div class="container"> <!--da cancellare a fine-->seconda card
+
+    <lightning:card title="{!$Label.c.UploadDocumentazione_DocFPF}" class="slds-m-bottom_xx-large">
+
+        <lightning:layout verticalAlign="center" multipleRows="true">
+
+                <lightning:layoutItem size="5">
+                    <lightning:fileUpload  name="FidPFDocument" aura:id="FidPFDocument"
+                                           label= "[06] Fideiussione Persona Fisica"
+                                           multiple="{!v.multiple}"
+                                           accept="{!v.accept}"
+                                           recordId="{!v.recordId}"
+                                           onuploadfinished="{! c.handleUploadFinished }"/>
+                </lightning:layoutItem>
+                <lightning:layoutItem size="1">
+                    <aura:if isTrue="{!v.simpleRecordOpp.X06_Fideiussione_Persona_Fisica__c}">
+                        <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                        class="icon-check slds-m-top_medium"/>
+                    </aura:if>
+                </lightning:layoutItem>
+        </lightning:layout>
+
+    </lightning:card>
+</div>
+    <lightning:card title="{!$Label.c.UploadDocumentazione_DocFPG}" class="slds-m-bottom_xx-large">
+
+        <lightning:layout verticalAlign="center" multipleRows="true">
+
+            <lightning:layoutItem size="5">
+                <lightning:fileUpload  name="FidPGDocument" aura:id="FidPGDocument"
+                                       label= "[07] Fideiussione Persona Giuridica"
+                                       multiple="{!v.multiple}"
+                                       accept="{!v.accept}"
+                                       recordId="{!v.recordId}"
+                                       onuploadfinished="{! c.handleUploadFinished }"/>
+            </lightning:layoutItem>
+            <lightning:layoutItem size="1">
+                <aura:if isTrue="{!v.simpleRecordOpp.X07_Fideiussione_Persona_Giuridica__c}">
+                    <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                    class="icon-check slds-m-top_medium"/>
+                </aura:if>
+            </lightning:layoutItem>
+
+        </lightning:layout>
+
+    </lightning:card>
+
+    <lightning:card title="{!$Label.c.UploadDocumentazione_GenericDocument}" class="slds-m-bottom_xx-large">
+
+        <lightning:layout verticalAlign="center" multipleRows="true">
+
+            <lightning:layoutItem size="5">
+                <lightning:fileUpload  name="GenericDocument" aura:id="GenericDocument"
+                                       label= "[05] Allegato 4 – Garanzia Diretta"
+                                       multiple="{!v.multiple}"
+                                       accept="{!v.accept}"
+                                       recordId="{!v.recordId}"
+                                       onuploadfinished="{! c.handleUploadFinished }"/>
+            </lightning:layoutItem>
+            <lightning:layoutItem size="1">
+                <aura:if isTrue="{!v.simpleRecordOpp.X05_Allegato_4_Garanzia_Diretta__c}">
+                    <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                    class="icon-check slds-m-top_medium"/>
+                </aura:if>
+            </lightning:layoutItem>
+
+        </lightning:layout>
+
+    </lightning:card>
+
+    <aura:if isTrue="{!and(v.simpleRecordOpp.StageName != 'Primo Contatto', v.simpleRecordOpp.StageName != 'Prima Visita', v.simpleRecordOpp.StageName != 'Approvazione Analisi')}">
+
+        <lightning:card title="{!$Label.c.UploadDocumentazione_SecondStep}" class="slds-m-bottom_xx-large">
+
+            <lightning:layout verticalAlign="center" multipleRows="true">
+                <aura:if isTrue="true">
+
+                    <lightning:layoutItem size="5">
+                        <lightning:fileUpload  name="LastTwoB" aura:id="LastTwoB"
+                                               label= "[08] Ultimi due Bilanci"
+                                               multiple="{!v.multiple}"
+                                               accept="{!v.accept}"
+                                               recordId="{!v.recordId}"
+                                               onuploadfinished="{! c.handleUploadFinished }"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="1">
+                        <aura:if isTrue="{!v.simpleRecordOpp.X08_Ultimi_due_Bilanci__c}">
+                            <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                            class="icon-check slds-m-top_medium"/>
+                        </aura:if>
+                    </lightning:layoutItem>
+
+                </aura:if>
+
+                <aura:if isTrue="true">
+                    <lightning:layoutItem size="5">
+                        <lightning:fileUpload  name="QuadroAffidamBancari" aura:id="QuadroAffidamBancari"
+                                               label= "[09] Quadro Affidamenti Bancari"
+                                               multiple="{!v.multiple}"
+                                               accept="{!v.accept}"
+                                               recordId="{!v.recordId}"
+                                               onuploadfinished="{! c.handleUploadFinished }"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="1">
+                        <aura:if isTrue="{!v.simpleRecordOpp.X09_Quadro_Affidamenti_Bancari__c}">
+                            <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                            class="icon-check slds-m-top_medium"/>
+                        </aura:if>
+                    </lightning:layoutItem>
+                </aura:if>
+
+                <aura:if isTrue="true">
+
+                    <lightning:layoutItem size="5">
+                        <lightning:fileUpload  name="ModuliPrincipali" aura:id="ModuliPrincipali"
+                                               label= "[10] Moduli Principali 5 Clienti/ 5 Fornitori"
+                                               multiple="{!v.multiple}"
+                                               accept="{!v.accept}"
+                                               recordId="{!v.recordId}"
+                                               onuploadfinished="{! c.handleUploadFinished }"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="1">
+                        <aura:if isTrue="{!v.simpleRecordOpp.X10_Moduli_5_Clienti_5_Fornitori__c}">
+                            <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                            class="icon-check slds-m-top_medium"/>
+                        </aura:if>
+                    </lightning:layoutItem>
+
+                </aura:if>
+
+                <aura:if isTrue="true">
+
+                    <lightning:layoutItem size="5">
+                        <lightning:fileUpload  name="PropostaCommerciale" aura:id="PropostaCommerciale"
+                                               label= "[11] Proposta Commerciale"
+                                               multiple="{!v.multiple}"
+                                               accept="{!v.accept}"
+                                               recordId="{!v.recordId}"
+                                               onuploadfinished="{! c.handleUploadFinished }"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="1">
+                        <aura:if isTrue="{!v.simpleRecordOpp.X11_Proposta_Commerciale__c}">
+                            <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                            class="icon-check slds-m-top_medium"/>
+                        </aura:if>
+                    </lightning:layoutItem>
+
+                </aura:if>
+
+                <aura:if isTrue="true">
+
+                    <lightning:layoutItem size="5">
+                        <lightning:fileUpload  name="RelazioneDiVisita" aura:id="RelazioneDiVisita"
+                                               label= "[12] Relazione di Visita"
+                                               multiple="{!v.multiple}"
+                                               accept="{!v.accept}"
+                                               recordId="{!v.recordId}"
+                                               onuploadfinished="{! c.handleUploadFinished }"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="1">
+                        <aura:if isTrue="{!v.simpleRecordOpp.X12_Relazione_di_Visita__c}">
+                            <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                            class="icon-check slds-m-top_medium"/>
+                        </aura:if>
+                    </lightning:layoutItem>
+
+                </aura:if>
+
+                <aura:if isTrue="true">
+
+                    <lightning:layoutItem size="5">
+                        <lightning:fileUpload  name="AttoCostitutivo" aura:id="AttoCostitutivo"
+                                               label= "[13] Atto Costitutivo"
+                                               multiple="{!v.multiple}"
+                                               accept="{!v.accept}"
+                                               recordId="{!v.recordId}"
+                                               onuploadfinished="{! c.handleUploadFinished }"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="1">
+                        <aura:if isTrue="{!v.simpleRecordOpp.X13_Atto_Costitutivo__c}">
+                            <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                            class="icon-check slds-m-top_medium"/>
+                        </aura:if>
+                    </lightning:layoutItem>
+
+                </aura:if>
+
+                <aura:if isTrue="true">
+
+                    <lightning:layoutItem size="5">
+                        <lightning:fileUpload  name="StatutoVigente" aura:id="StatutoVigente"
+                                               label= "[14] Statuto Vigente della Società"
+                                               multiple="{!v.multiple}"
+                                               accept="{!v.accept}"
+                                               recordId="{!v.recordId}"
+                                               onuploadfinished="{! c.handleUploadFinished }"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="1">
+                        <aura:if isTrue="{!v.simpleRecordOpp.X14_Statuto_Vigente_della_Societ__c}">
+                            <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                            class="icon-check slds-m-top_medium"/>
+                        </aura:if>
+                    </lightning:layoutItem>
+
+                </aura:if>
+
+                    <aura:if isTrue="true">
+                        <lightning:layoutItem size="5">
+                            <lightning:fileUpload  name="opp-$-O01" aura:id="opp-$-O01"
+                                                   label= "[15] Garanti Consenso SIC"
+                                                   multiple="{!v.multiple}"
+                                                   accept="{!v.accept}"
+                                                   recordId="{!v.recordId}"
+                                                   onuploadfinished="{! c.handleUploadFinished }"/>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem size="1">
+                            <aura:if isTrue="{!v.O01}">
+                                <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                                class="icon-check slds-m-top_medium slds-p-left"/>
+                            </aura:if>
+                        </lightning:layoutItem>
+
+                </aura:if>
+
+                <aura:if isTrue="true">
+
+                    <lightning:layoutItem size="5">
+                        <lightning:fileUpload  name="opp-$-O02" aura:id="opp-$-O02"
+                                               label= "[16] Visura Camerale"
+                                               multiple="{!v.multiple}"
+                                               accept="{!v.accept}"
+                                               recordId="{!v.recordId}"
+                                               onuploadfinished="{! c.handleUploadFinished }"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="1">
+                        <aura:if isTrue="{!v.O02}">
+                            <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                            class="icon-check slds-m-top_medium"/>
+                        </aura:if>
+                    </lightning:layoutItem>
+
+                </aura:if>
+
+                <aura:if isTrue="true">
+
+                    <lightning:layoutItem size="5">
+                        <lightning:fileUpload  name="opp-$-O03" aura:id="opp-$-O03"
+                                               label= "[17] Presentazione Aziendale"
+                                               multiple="{!v.multiple}"
+                                               accept="{!v.accept}"
+                                               recordId="{!v.recordId}"
+                                               onuploadfinished="{! c.handleUploadFinished }"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="1">
+                        <aura:if isTrue="{!v.O03}">
+                            <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                            class="icon-check slds-m-top_medium"/>
+                        </aura:if>
+                    </lightning:layoutItem>
+
+                </aura:if>
+
+                <aura:if isTrue="true">
+
+                        <lightning:layoutItem size="5">
+                            <lightning:fileUpload  name="opp-$-O04" aura:id="opp-$-O04"
+                                                   label= "[18] Bilancio Provvisorio Sottoscritto dal Legale Rappresentante"
+                                                   multiple="{!v.multiple}"
+                                                   accept="{!v.accept}"
+                                                   recordId="{!v.recordId}"
+                                                   onuploadfinished="{! c.handleUploadFinished }"/>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem size="1">
+                            <aura:if isTrue="{!v.O04}">
+                                <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                                class="icon-check slds-m-top_medium"/>
+                            </aura:if>
+                        </lightning:layoutItem>
+
+                </aura:if>
+
+                <aura:if isTrue="true">
+
+                        <lightning:layoutItem size="5">
+                            <lightning:fileUpload  name="opp-$-O05" aura:id="opp-$-O05"
+                                                   label= "[19] Accordo Rateizzazione"
+                                                   multiple="{!v.multiple}"
+                                                   accept="{!v.accept}"
+                                                   recordId="{!v.recordId}"
+                                                   onuploadfinished="{! c.handleUploadFinished }"/>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem size="1">
+                            <aura:if isTrue="{!v.O05}">
+                                <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                                class="icon-check slds-m-top_medium"/>
+                            </aura:if>
+                        </lightning:layoutItem>
+
+                </aura:if>
+
+
+                <aura:if isTrue="true">
+
+                        <lightning:layoutItem size="5">
+                            <lightning:fileUpload  name="opp-$-O06" aura:id="opp-$-O06"
+                                                   label= "[20] DURC"
+                                                   multiple="{!v.multiple}"
+                                                   accept="{!v.accept}"
+                                                   recordId="{!v.recordId}"
+                                                   onuploadfinished="{! c.handleUploadFinished }"/>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem size="1">
+                            <aura:if isTrue="{!v.O06}">
+                                <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                                class="icon-check slds-m-top_medium"/>
+                            </aura:if>
+                        </lightning:layoutItem>
+
+                </aura:if>
+
+                <aura:if isTrue="true">
+
+                        <lightning:layoutItem size="5">
+                            <lightning:fileUpload  name="opp-$-O07" aura:id="opp-$-O07"
+                                                   label= "[21] Estratto Conto Bancario"
+                                                   multiple="{!v.multiple}"
+                                                   accept="{!v.accept}"
+                                                   recordId="{!v.recordId}"
+                                                   onuploadfinished="{! c.handleUploadFinished }"/>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem size="1">
+                            <aura:if isTrue="{!v.O07}">
+                                <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                                class="icon-check slds-m-top_medium"/>
+                            </aura:if>
+                        </lightning:layoutItem>
+
+                </aura:if>
+
+
+                <aura:if isTrue="true">
+
+                        <lightning:layoutItem size="5">
+                            <lightning:fileUpload  name="opp-$-O08" aura:id="opp-$-O08"
+                                                   label= "[22] Business Plan e Preventivi"
+                                                   multiple="{!v.multiple}"
+                                                   accept="{!v.accept}"
+                                                   recordId="{!v.recordId}"
+                                                   onuploadfinished="{! c.handleUploadFinished }"/>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem size="1">
+                            <aura:if isTrue="{!v.O08}">
+                                <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                                class="icon-check slds-m-top_medium"/>
+                            </aura:if>
+                        </lightning:layoutItem>
+
+                </aura:if>
+
+
+                <aura:if isTrue="true">
+
+                        <lightning:layoutItem size="5">
+                            <lightning:fileUpload  name="opp-$-O09" aura:id="opp-$-O09"
+                                                   label= "[23] Rating di Legalità"
+                                                   multiple="{!v.multiple}"
+                                                   accept="{!v.accept}"
+                                                   recordId="{!v.recordId}"
+                                                   onuploadfinished="{! c.handleUploadFinished }"/>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem size="1">
+                            <aura:if isTrue="{!v.O09}">
+                                <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                                class="icon-check slds-m-top_medium"/>
+                            </aura:if>
+                        </lightning:layoutItem>
+
+                </aura:if>
+
+                <aura:if isTrue="{!v.simpleRecordUser.Profile.Name == 'Inside Sales'}">
+
+                        <lightning:layoutItem size="5">
+                            <lightning:fileUpload  name="opp-$-O10" aura:id="opp-$-O10"
+                                                   label= "[24] QRP Cerved"
+                                                   multiple="{!v.multiple}"
+                                                   accept="{!v.accept}"
+                                                   recordId="{!v.recordId}"
+                                                   onuploadfinished="{! c.handleUploadFinished }"/>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem size="1">
+                            <aura:if isTrue="{!v.O10}">
+                                <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                                class="icon-check slds-m-top_medium"/>
+                            </aura:if>
+                        </lightning:layoutItem>
+
+                </aura:if>
+
+                </lightning:layout>
+
+        </lightning:card>
+
+        <lightning:card title="{!$Label.c.UploadDocumentazione_DocFPF}">
+
+            <!--<aura:if isTrue="{! v.simpleRecordOpp.Necessaria_Fideiussione__c == 'Sì, associata a Persona Fisica'}">-->
+
+            <lightning:layout verticalAlign="center" multipleRows="true">
+
+                <lightning:layoutItem size="5">
+                    <lightning:fileUpload  name="opp-$-O11" aura:id="opp-$-O11"
+                                           label= "[25] Fid PF - Situazione Debitoria con le Banche"
+                                           multiple="{!v.multiple}"
+                                           accept="{!v.accept}"
+                                           recordId="{!v.recordId}"
+                                           onuploadfinished="{! c.handleUploadFinished }"/>
+                </lightning:layoutItem>
+                <lightning:layoutItem size="1">
+                    <aura:if isTrue="{!v.O11}">
+                        <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                        class="icon-check slds-m-top_medium"/>
+                    </aura:if>
+                </lightning:layoutItem>
+
+                <lightning:layoutItem size="5">
+                    <lightning:fileUpload  name="opp-$-O12" aura:id="opp-$-O12"
+                                           label= "[26] Ultimi due Modelli Fiscali"
+                                           multiple="{!v.multiple}"
+                                           accept="{!v.accept}"
+                                           recordId="{!v.recordId}"
+                                           onuploadfinished="{! c.handleUploadFinished }"/>
+                </lightning:layoutItem>
+                <lightning:layoutItem size="1">
+                    <aura:if isTrue="{!v.O12}">
+                        <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                        class="icon-check slds-m-top_medium"/>
+                    </aura:if>
+                </lightning:layoutItem>
+
+                <lightning:layoutItem size="5">
+                    <lightning:fileUpload  name="opp-$-O13" aura:id="opp-$-O13"
+                                           label= "[27] Dettaglio Debiti e Proprietà Immobiliari"
+                                           multiple="{!v.multiple}"
+                                           accept="{!v.accept}"
+                                           recordId="{!v.recordId}"
+                                           onuploadfinished="{! c.handleUploadFinished }"/>
+                </lightning:layoutItem>
+                <lightning:layoutItem size="1">
+                    <aura:if isTrue="{!v.O13}">
+                        <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                        class="icon-check slds-m-top_medium"/>
+                    </aura:if>
+                </lightning:layoutItem>
+
+            </lightning:layout>
+
+            <!--</aura:if>-->
+
+        </lightning:card>
+
+        <lightning:card title="{!$Label.c.UploadDocumentazione_DocFPG}">
+
+            <!--<aura:if isTrue="{! v.simpleRecordOpp.Necessaria_Fideiussione__c == 'Sì, associata a Persona Fisica'}">-->
+
+            <lightning:layout verticalAlign="center" multipleRows="true">
+
+                <lightning:layoutItem size="5">
+                    <lightning:fileUpload  name="opp-$-O14" aura:id="opp-$-O14"
+                                           label= "[28] Modulo Fideiussione"
+                                           multiple="{!v.multiple}"
+                                           accept="{!v.accept}"
+                                           recordId="{!v.recordId}"
+                                           onuploadfinished="{! c.handleUploadFinished }"/>
+                </lightning:layoutItem>
+                <lightning:layoutItem size="1">
+                    <aura:if isTrue="{!v.O14}">
+                        <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                        class="icon-check slds-m-top_medium"/>
+                    </aura:if>
+                </lightning:layoutItem>
+
+                <lightning:layoutItem size="5">
+                    <lightning:fileUpload  name="opp-$-O15" aura:id="opp-$-O15"
+                                           label= "[29] Fid PG - Visura Camerale"
+                                           multiple="{!v.multiple}"
+                                           accept="{!v.accept}"
+                                           recordId="{!v.recordId}"
+                                           onuploadfinished="{! c.handleUploadFinished }"/>
+                </lightning:layoutItem>
+                <lightning:layoutItem size="1">
+                    <aura:if isTrue="{!v.O15}">
+                        <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                        class="icon-check slds-m-top_medium"/>
+                    </aura:if>
+                </lightning:layoutItem>
+
+                <lightning:layoutItem size="5">
+                    <lightning:fileUpload  name="opp-$-O16" aura:id="opp-$-O16"
+                                           label= "[30] Doc Legale Rappresentante/Titolari Effettivi"
+                                           multiple="{!v.multiple}"
+                                           accept="{!v.accept}"
+                                           recordId="{!v.recordId}"
+                                           onuploadfinished="{! c.handleUploadFinished }"/>
+                </lightning:layoutItem>
+                <lightning:layoutItem size="1">
+                    <aura:if isTrue="{!v.O16}">
+                        <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                        class="icon-check slds-m-top_medium"/>
+                    </aura:if>
+                </lightning:layoutItem>
+
+                <lightning:layoutItem size="5">
+                    <lightning:fileUpload  name="opp-$-O17" aura:id="opp-$-O17"
+                                           label= "[31] Atto Costitutivo e Statuto"
+                                           multiple="{!v.multiple}"
+                                           accept="{!v.accept}"
+                                           recordId="{!v.recordId}"
+                                           onuploadfinished="{! c.handleUploadFinished }"/>
+                </lightning:layoutItem>
+                <lightning:layoutItem size="1">
+                    <aura:if isTrue="{!v.O17}">
+                        <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                        class="icon-check slds-m-top_medium"/>
+                    </aura:if>
+                </lightning:layoutItem>
+
+                <lightning:layoutItem size="5">
+                    <lightning:fileUpload  name="opp-$-O18" aura:id="opp-$-O18"
+                                           label= "[32] Ultimi 2 Bilanci completi di Nota Integrativa"
+                                           multiple="{!v.multiple}"
+                                           accept="{!v.accept}"
+                                           recordId="{!v.recordId}"
+                                           onuploadfinished="{! c.handleUploadFinished }"/>
+                </lightning:layoutItem>
+                <lightning:layoutItem size="1">
+                    <aura:if isTrue="{!v.O18}">
+                        <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                        class="icon-check slds-m-top_medium"/>
+                    </aura:if>
+                </lightning:layoutItem>
+
+                <lightning:layoutItem size="5">
+                    <lightning:fileUpload  name="opp-$-O19" aura:id="opp-$-O19"
+                                           label= "[33] Fid PG - Situazione Debitoria con le Banche"
+                                           multiple="{!v.multiple}"
+                                           accept="{!v.accept}"
+                                           recordId="{!v.recordId}"
+                                           onuploadfinished="{! c.handleUploadFinished }"/>
+                </lightning:layoutItem>
+                <lightning:layoutItem size="1">
+                    <aura:if isTrue="{!v.O19}">
+                        <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                        class="icon-check slds-m-top_medium"/>
+                    </aura:if>
+                </lightning:layoutItem>
+
+                <lightning:layoutItem size="5">
+                    <lightning:fileUpload  name="opp-$-O20" aura:id="opp-$-O20"
+                                           label= "[34] Copia dell'Accordo"
+                                           multiple="{!v.multiple}"
+                                           accept="{!v.accept}"
+                                           recordId="{!v.recordId}"
+                                           onuploadfinished="{! c.handleUploadFinished }"/>
+                </lightning:layoutItem>
+                <lightning:layoutItem size="1">
+                    <aura:if isTrue="{!v.O020}">
+                        <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                        class="icon-check slds-m-top_medium"/>
+                    </aura:if>
+                </lightning:layoutItem>
+
+            </lightning:layout>
+
+            <!--</aura:if>-->
+
+        </lightning:card>
+
+        <lightning:card title="{!$Label.c.UploadDocumentazione_GroupDocuments}">
+
+            <lightning:layout verticalAlign="center" multipleRows="true">
+
+                <lightning:layoutItem size="5">
+                    <lightning:fileUpload  name="opp-$-O21" aura:id="opp-$-O21"
+                                           label= "[35] Copia Ultimi 2 Bilanci Consolidati"
+                                           multiple="{!v.multiple}"
+                                           accept="{!v.accept}"
+                                           recordId="{!v.recordId}"
+                                           onuploadfinished="{! c.handleUploadFinished }"/>
+                </lightning:layoutItem>
+                <lightning:layoutItem size="1">
+                    <aura:if isTrue="{!v.O21}">
+                        <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                        class="icon-check slds-m-top_medium"/>
+                    </aura:if>
+                </lightning:layoutItem>
+
+                <lightning:layoutItem size="5">
+                    <lightning:fileUpload  name="opp-$-O22" aura:id="opp-$-O22"
+                                           label= "[36] Dettagli Infragruppo"
+                                           multiple="{!v.multiple}"
+                                           accept="{!v.accept}"
+                                           recordId="{!v.recordId}"
+                                           onuploadfinished="{! c.handleUploadFinished }"/>
+                </lightning:layoutItem>
+                <lightning:layoutItem size="1">
+                    <aura:if isTrue="{!v.O22}">
+                        <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                        class="icon-check slds-m-top_medium"/>
+                    </aura:if>
+                </lightning:layoutItem>
+
+                <lightning:layoutItem size="5">
+                    <lightning:fileUpload  name="opp-$-O23" aura:id="opp-$-O23"
+                                           label= "[37] Situazione Debitoria con le Banche"
+                                           multiple="{!v.multiple}"
+                                           accept="{!v.accept}"
+                                           recordId="{!v.recordId}"
+                                           onuploadfinished="{! c.handleUploadFinished }"/>
+                </lightning:layoutItem>
+                <lightning:layoutItem size="1">
+                    <aura:if isTrue="{!v.O23}">
+                        <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                        class="icon-check slds-m-top_medium"/>
+                    </aura:if>
+                </lightning:layoutItem>
+
+                <lightning:layoutItem size="5">
+                    <lightning:fileUpload  name="opp-$-O24" aura:id="opp-$-O24"
+                                           label= "[38] Gruppo DURC"
+                                           multiple="{!v.multiple}"
+                                           accept="{!v.accept}"
+                                           recordId="{!v.recordId}"
+                                           onuploadfinished="{! c.handleUploadFinished }"/>
+                </lightning:layoutItem>
+                <lightning:layoutItem size="1">
+                    <aura:if isTrue="{!v.O24}">
+                        <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                        class="icon-check slds-m-top_medium"/>
+                    </aura:if>
+                </lightning:layoutItem>
+
+                <lightning:layoutItem size="5">
+                    <lightning:fileUpload  name="opp-$-O25" aura:id="opp-$-O25"
+                                           label= "[39] Copia Accordo Rateizzazione"
+                                           multiple="{!v.multiple}"
+                                           accept="{!v.accept}"
+                                           recordId="{!v.recordId}"
+                                           onuploadfinished="{! c.handleUploadFinished }"/>
+                </lightning:layoutItem>
+                <lightning:layoutItem size="1">
+                    <aura:if isTrue="{!v.O25}">
+                        <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                        class="icon-check slds-m-top_medium"/>
+                    </aura:if>
+                </lightning:layoutItem>
+
+            </lightning:layout>
+
+        </lightning:card>
+
+    </aura:if>
+
+    <!-- TODO da capre se è corretto scrivere così per la fase -->
+    <aura:if isTrue="{!v.simpleRecordOpp.StageName == 'Deliberata'}">
+        <lightning:card title="{!$Label.c.UploadDocumentazione_ThirdStep}">
+
+            <lightning:layout verticalAlign="center" multipleRows="true">
+
+                <lightning:layoutItem size="5">
+                    <lightning:fileUpload  name="opp-$-O26" aura:id="opp-$-O26"
+                                           label= "[40] Estratto Autentico Delega Sottoscrizione"
+                                           multiple="{!v.multiple}"
+                                           accept="{!v.accept}"
+                                           recordId="{!v.recordId}"
+                                           onuploadfinished="{! c.handleUploadFinished }"/>
+                </lightning:layoutItem>
+                <lightning:layoutItem size="1">
+                    <aura:if isTrue="{!v.O18}">
+                        <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                        class="icon-check slds-m-top_medium"/>
+                    </aura:if>
+                </lightning:layoutItem>
+
+                <lightning:layoutItem size="5">
+                    <lightning:fileUpload  name="opp-$-O27" aura:id="opp-$-O27"
+                                           label= "[41] Estratto Autentico Delega Quietanza"
+                                           multiple="{!v.multiple}"
+                                           accept="{!v.accept}"
+                                           recordId="{!v.recordId}"
+                                           onuploadfinished="{! c.handleUploadFinished }"/>
+                </lightning:layoutItem>
+                <lightning:layoutItem size="1">
+                    <aura:if isTrue="{!v.O27}">
+                        <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                        class="icon-check slds-m-top_medium"/>
+                    </aura:if>
+                </lightning:layoutItem>
+
+                <lightning:layoutItem size="5">
+                    <lightning:fileUpload  name="opp-$-O28" aura:id="opp-$-O28"
+                                           label= "[42] Codice IBAN"
+                                           multiple="{!v.multiple}"
+                                           accept="{!v.accept}"
+                                           recordId="{!v.recordId}"
+                                           onuploadfinished="{! c.handleUploadFinished }"/>
+                </lightning:layoutItem>
+                <lightning:layoutItem size="1">
+                    <aura:if isTrue="{!v.O28}">
+                        <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                        class="icon-check slds-m-top_medium"/>
+                    </aura:if>
+                </lightning:layoutItem>
+
+                <aura:if isTrue="{!v.simpleRecordUser.Profile.Name == 'Inside Sales'}">
+                    <lightning:layoutItem size="5">
+                        <lightning:fileUpload  name="opp-$-O29" aura:id="opp-$-O29"
+                                               label= "[43] Certificato Notarile"
+                                               multiple="{!v.multiple}"
+                                               accept="{!v.accept}"
+                                               recordId="{!v.recordId}"
+                                               onuploadfinished="{! c.handleUploadFinished }"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="1">
+                        <aura:if isTrue="{!v.O29}">
+                            <lightning:icon iconName="utility:check" alternativeText="Approved" size="x-small"
+                                            class="icon-check slds-m-top_medium"/>
+                        </aura:if>
+                    </lightning:layoutItem>
+                </aura:if>
+
+            </lightning:layout>
+
+        </lightning:card>
+    </aura:if>
+
+
+</aura:component>

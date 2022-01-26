@@ -1,0 +1,54 @@
+<aura:component controller="Utils" implements="force:appHostable,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,force:hasRecordId" access="global" >
+        
+    		 <aura:attribute name="record" type="Object" />
+    		 <aura:attribute name="simpleRecord" type="Object" />
+    		 <aura:attribute name="error" type="String" />
+    <aura:attribute name="flagSimulazione" type="Boolean" />
+    <aura:attribute name="flagCongelamento" type="Boolean" />
+        <aura:attribute name="fake" type="Boolean" default="false" />
+
+        
+    <force:recordData aura:id="currentRecord"
+                      recordId="{!v.recordId}"
+                      targetRecord="{!v.record}"
+                      targetFields="{!v.simpleRecord}"
+                      targetError="{!v.error}"
+                      layoutType="FULL"
+                      fields="Verifica_fondo__c, Esito_congelamento__c, Tipo_di_Garanzia__c, Esito_simulazione__c"
+                      recordUpdated="{!c.doInit}"                      
+
+                       />
+        <aura:if isTrue="{!v.fake == true}">
+
+            <div class="slds-box" style="background: white;">
+<div class="slds-grid slds-gutters slds-align_absolute-center">
+        <aura:if isTrue="{!v.simpleRecord.Verifica_fondo__c != 'Non Necessaria'}">
+
+    <lightning:button 
+                          variant="success" name="Verifica" label="Verifica Fondo"
+                          disabled="{!!or(v.simpleRecord.Verifica_fondo__c=='Da Verificare' , v.simpleRecord.Verifica_fondo__c=='Esito Negativo')}"
+                          onclick="{!c.update}"/>
+              </aura:if> 
+
+
+        <aura:if isTrue="{!v.simpleRecord.Esito_simulazione__c != 'Non Necessaria'}">
+              <lightning:button 
+                          variant="success" name="Simulazione" label="Simulazione Fondo"
+                          disabled="{!v.flagSimulazione}"
+                          onclick="{!c.update}" />
+                          </aura:if> 
+
+                <aura:if isTrue="{!v.simpleRecord.Esito_congelamento__c != 'Non Necessaria'}">
+
+        <lightning:button 
+                          variant="success" name="Congelamento" label="Congelamento Fondo"
+                          disabled="{!v.flagCongelamento}"
+                          onclick="{!c.update}" />   
+                                              </aura:if> 
+
+            
+    </div>
+            </div>
+    </aura:if>
+
+</aura:component>

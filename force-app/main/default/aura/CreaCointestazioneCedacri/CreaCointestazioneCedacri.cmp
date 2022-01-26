@@ -1,0 +1,58 @@
+<aura:component controller="Utils" implements="force:appHostable,flexipage:availableForAllPageTypes,force:lightningQuickAction,force:hasRecordId" access="global" >
+    <aura:attribute name="recordId" type="String" />
+    
+    <aura:attribute name="message" type="Object"/>
+    
+    <aura:attribute name="fake" type="Boolean"/>
+    
+        <aura:attribute name="switch" type="Boolean" default="false"/>
+    
+       <aura:attribute name="buttonDisable" type="Boolean" default="false"/> 
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <aura:if isTrue="{!v.fake == false}">
+        <div class = "slds-text-title_caps" style="padding-top:10px; font-weight: bold;">
+            Esiste già una cointestazione costituita dagli stessi Fidejussori</div>
+        
+        <aura:iteration items="{!v.message}" var="per" indexVar="index">
+            <p> <a onclick="{!c.navigateToRecord}" style="width:100%;" data-index="{!index}">- {!per.Name}</a> </p>   
+        </aura:iteration>
+        &nbsp;
+        &nbsp;
+        <div class = "slds-text-title_caps slds-align_absolute-center slds-p-top_xx-large" style="padding-top:20px; font-weight: bold;">
+            Per andare avanti scegliere uno di questi passaggi</div>
+
+        <div>
+            <div class = "slds-text-title_caps slds-p-top_x-large" >
+                Se si vuole eliminare la cointestazione che si sta cercando di creare cliccare il pulsante "Elemina"
+            </div>
+            <div class="slds-float--right slds-p-top_medium slds-p-right_large">
+                <lightning:button label="Elemina" variant="brand" onclick="{!c.deleteCointestestazione}"/>
+            </div>
+        </div>            
+        &nbsp; &nbsp; <div> &nbsp; </div>
+        <div>
+            <div class = "slds-text-title_caps slds-p-top_xx-large">
+                Se si vuole modificare la cointestazione che si sta cercando di creare cliccare il pulsante "Modifica"
+            </div>
+            <div class="slds-float--right slds-p-top_medium slds-p-right_large">
+                <lightning:button variant="brand" label="Modifica" onclick="{!c.modificaCointestestazione}"  />
+            </div>
+        </div>
+        
+    </aura:if>
+    
+    <aura:if isTrue="{!v.fake == true}">
+        <div class = "slds-p-top_xx-large">
+        <div class = "slds-text-title_caps " style="padding-top:20px; font-weight: bold;">Confermi la richiesta di Censimento NDG?</div>
+        <div class="slds-float--right slds-p-top_large">
+            <aura:if isTrue="{!v.switch == false}">
+                        <lightning:helptext content="ATTENZIONE! La funzionalità di richiesta NDG è stata disabilitata. Contattare l'amministratore di sistema."/>
+                        </aura:if>
+            <lightning:button variant="brand" label="Conferma"  disabled="{!!v.buttonDisable}" onclick="{!c.updateCheck11}"  />
+        </div>
+        </div>
+    </aura:if>
+    
+</aura:component>

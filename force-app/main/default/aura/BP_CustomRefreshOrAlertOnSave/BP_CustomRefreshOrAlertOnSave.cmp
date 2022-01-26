@@ -1,0 +1,9 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId" access="global" >
+    <lightning:empApi aura:id="empApi"/>
+    <aura:attribute name="channel" type="String" default="/event/Refresh_Lightning__e"/>
+    <aura:attribute name="subscription" type="Map"/>
+    
+    <!--<aura:handler event="force:showToast" action="{!c.refreshRecords}"/>-->
+    <aura:handler name="init"  value="{!this}" action="{!c.refresh}"/> 
+    
+</aura:component>

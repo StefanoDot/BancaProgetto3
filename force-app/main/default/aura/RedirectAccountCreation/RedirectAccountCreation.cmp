@@ -1,0 +1,9 @@
+<aura:component implements="force:appHostable,forceCommunity:availableForAllPageTypes,flexipage:availableForAllPageTypes" access="global">
+    
+    <aura:attribute name="vfHost" type="String" default="dev-bancaprogetto.cs105.force.com"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.createRecord}"/>
+
+    <!--<iframe aura:id="vfFrame" src="{!'https://' + v.vfHost + '/s/ricerca-clienti'}" />-->
+
+</aura:component>

@@ -1,0 +1,119 @@
+<!--
+ - Created by ACAPUTO00 on 03/03/2020.
+ -->
+
+<aura:component description="RichiediContratto" controller="RichiediContrattoController" implements="force:lightningQuickActionWithoutHeader,flexipage:availableForAllPageTypes,force:hasRecordId">
+    
+    <ltng:require styles="{!$Resource.RichiediStyle}" />
+    
+    <aura:attribute name="message" type="String"/>
+    <aura:attribute name="title" type="String"/>
+    <aura:attribute name="myMap" type="List"/>
+    <aura:attribute name="onlyManual" type= "Boolean"/>
+    <aura:attribute name="secondWindow" type= "Boolean"/>
+    <aura:attribute name="tipoFirma" type="String"/>
+    <aura:attribute name="isDigitale" type="Boolean" default="false"/>
+    <aura:attribute name="isManuale" type="Boolean"/>
+    <aura:attribute name="areFields" type="Boolean" default="false"/>
+    <aura:attribute name="showLoadingSpinner" type="boolean" default="false" />
+    <aura:attribute name="contact" type="Object"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" default="false"/>
+
+    <div class="slds-modal_small">
+        <header class="slds-modal__header">  
+            <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate"  style="font-weight: bold;">{!v.title}</h2>
+            <aura:if isTrue="{!v.showLoadingSpinner}">
+                <center>
+                    <div class="slds-text-body_small slds-text-color_error">Caricamento...
+                        <img src="/auraFW/resources/aura/images/spinner.gif" class="spinner-img" alt="Loading" />
+                    </div>
+                </center>
+            </aura:if>
+        </header>
+    </div>
+    
+    <aura:if isTrue="{!v.areFields == true}">
+        <div class="slds-align_absolute-center" style="padding-top:20px;"> 
+            <ui:outputRichText value="{!v.message}"/>
+        </div>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.secondWindow == false}">
+        <aura:if isTrue="{!v.isDigitale==true}">
+            <div class="slds-align_absolute-center " style="padding-top:20px;">
+                <p>Hai indicato come firmatario:  <a onclick="{!c.navigateToRecord}" style="width:100%;" >- {!v.contact.Name}</a> </p> 
+            </div>
+            <div class="slds-align_absolute-center" style="padding-top:20px;"> 
+                Le condizioni per effettuare la Firma Digitale sono verificate.
+                <br></br>
+                 Vuoi procedere con la Firma Digitale o Manuale?
+            </div>
+        </aura:if>
+        
+        <aura:if isTrue="{!v.isDigitale==false}">
+              <div class="slds-align_absolute-center" style="padding-top:20px; padding-bottom:20px;"> 
+                Una o più condizioni per effettuare la Firma Digitale non sono verificate:
+            </div>
+            
+            
+              <aura:iteration items="{!v.myMap}" var="condition" indexVar="key">
+            <aura:if isTrue="{!condition.value == 'true'}">
+               <lightning:icon iconName="standard:task2" size="xx-small"/>
+            </aura:if>
+             <aura:if isTrue="{!condition.value == 'false'}">
+               <lightning:icon iconName="standard:first_non_empty" size="xx-small"/>
+            </aura:if>
+             {!condition.key}
+            <br/><br></br>
+        </aura:iteration>
+            
+            <div class="slds-align_absolute-center" style="padding-top:20px;"> 
+                Vuoi continuare a modificare l'opportunità per consentire la Firma Digitale oppure vuoi continuare con la Firma Manuale?
+            </div>
+            <div class="slds-align_absolute-center slds-p-top_large">
+                <lightning:button label="Modifica" onclick="{!c.refresh}" />
+            </div>
+        </aura:if>
+        
+        <div class="slds-align_absolute-center slds-p-top_large">
+            <aura:if isTrue="{!v.isDigitale==true}">
+                <!--   <lightning:button label="Firma Digitale" onclick="{}"  />--> 
+            </aura:if>
+            
+            <lightning:button label="Firma Manuale" onclick="{!c.manualFirm}"/>
+            
+        </div>
+    </aura:if>  
+    
+    <aura:if isTrue="{!v.secondWindow == true}">
+        
+        <div class="slds-align_absolute-center" style="padding-top:20px;">
+            <ui:outputRichText value="{!v.tipoFirma}"/>
+        </div>
+        <div class="slds-align_absolute-center" style="padding-top:20px;">
+            Sei sicuro di voler proseguire?
+        </div>
+        
+        <div class="slds-align_absolute-center slds-m-around--xx-large">
+            <lightning:button variant="success" label="Conferma" onclick="{!c.yesButton}" disabled="false"/>
+              </div>
+            &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <div class="slds-align_absolute-left slds-m-around--xx-large">
+            <lightning:button label="Indietro" iconName="utility:chevronleft" onclick="{!c.goBack}" /> 
+        </div>
+ 
+    </aura:if>
+    
+        <aura:if isTrue="{!v.onlyManual == true}">
+        
+        <div class="slds-align_absolute-center" style="padding-top:20px;">
+            <ui:outputRichText value="{!v.message}"/>
+        </div>
+            
+        <div class="slds-align_absolute-center slds-m-around--xx-large">
+            <lightning:button variant="success" label="Conferma" onclick="{!c.yesButton}" disabled="false"/>
+              </div>
+    </aura:if>
+    
+</aura:component>

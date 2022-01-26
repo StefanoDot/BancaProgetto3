@@ -1,0 +1,453 @@
+<aura:component controller="RichiediContrattoController" description="Rissotemettere" implements="force:appHostable,flexipage:availableForAllPageTypes,force:lightningQuickAction,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" >
+    <ltng:require styles="{!$Resource.RichiediStyle}" />
+    <aura:attribute name="record" type="Object" />
+    <aura:attribute name="simpleRecord" type="Object" />
+    <aura:attribute name="error" type="String" />
+    <aura:attribute name="showLoadingSpinner" type="boolean" default="false" />
+    <aura:attribute name="butonof" type="boolean" default="false"/>
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    <aura:attribute name="isOpen1" type="boolean" default="false"/>
+    <aura:attribute name="isOpen2" type="boolean" default="false"/>
+    <aura:attribute name="isOpen3" type="boolean" default="false"/>
+    <aura:attribute name="switch" type="Boolean" default="false"/>
+    <aura:attribute name="check" type="Boolean" default="true"/>
+    <aura:attribute name="certificatoNotarileDocsAreValid" type="Boolean" default="false"/>
+    <aura:attribute name="message" type="String"/>
+    <aura:attribute name="title" type="String"/>
+    <aura:attribute name="arerules" type="Boolean" default="false"/>
+    <aura:attribute name="arecheck" type="Boolean" default="false"/>
+    <aura:attribute name="message1" type="String"/>
+    <aura:attribute name="title1" type="String"/>
+    <aura:attribute name="myMap" type="List"/>
+    <aura:attribute name="onlyManual" type= "Boolean"/>
+    <aura:attribute name="secondWindow" type= "Boolean"/>
+    <aura:attribute name="tipoFirma" type="String"/>
+    <aura:attribute name="isDigitale" type="Boolean" default="false"/>
+    <aura:attribute name="isManuale" type="Boolean"/>
+    <aura:attribute name="areFields" type="Boolean" default="false"/>
+    <aura:attribute name="contact" type="Object"/>
+    <aura:attribute name="CurrentUser" type="Object"/>
+    <aura:attribute name="allContacts" type="List" />
+    <aura:attribute name="allFirmatarioContacts" type="List" />
+    <aura:attribute name="allFidejussoriContacts" type="List" />
+
+    <aura:attribute name="allPersonaFiscaLst" type="List" />
+    <aura:attribute name="allPersonaGiuridicaLst" type="List" />
+    <aura:attribute name="allPersonaFisFieldChk" type="Boolean" default="false"/>
+    <aura:attribute name="allPersonaGiuFieldChk" type="Boolean" default="false"/>
+    <aura:attribute name="showFidejusoriBlock" type="Boolean" default="false"/>
+    
+    <lightning:notificationsLibrary aura:id="notifLib"/>
+    <c:notificationSvc aura:id="notify"/>
+    
+    <force:recordData recordId="{!$SObjectType.CurrentUser.Id}"
+                      fields="Profile.Name"
+                      targetFields="{!v.CurrentUser}"/>
+    
+    <force:recordData aura:id="currentRecord"
+                      recordId="{!v.recordId}"
+                      targetRecord="{!v.record}"
+                      targetFields="{!v.simpleRecord}"
+                      targetError="{!v.error}"
+                      layoutType="FULL"
+                      fields="AccountId,StageName,Tipo_Linea_di_Credito__c"
+                      recordUpdated="{!c.doInit}"  />       
+    
+    <aura:if isTrue="{!(((v.simpleRecord.StageName == 'Firma' || v.simpleRecord.StageName == 'In Stipula' || v.simpleRecord.StageName == 'Firma e Cessione') &amp;&amp; (v.CurrentUser.Profile.Name == 'Sales Support' || v.CurrentUser.Profile.Name == 'Sales Support Supervisor' || v.CurrentUser.Profile.Name == 'System Administrator' || v.CurrentUser.Profile.Name == 'Back Office Cedenti Ceduti' || v.CurrentUser.Profile.Name == 'Responsabile BO Cedenti Ceduti'))
+                     || v.simpleRecord.StageName == 'Deliberata' )&amp;&amp; (v.simpleRecord.Tipo_Linea_di_Credito__c == 'Mutuo' ||  v.simpleRecord.Tipo_Linea_di_Credito__c == 'Crediti Fiscali')}">
+        <div class="slds-box slds-align_absolute-center"  style="background: white; height:82px;">
+            
+            <aura:if isTrue="{!v.simpleRecord.StageName == 'Deliberata'}">
+                
+                
+                <lightning:button variant="success"  label="Richiedi Contratto" onclick="{!c.onClickRichiediContratto}" />&nbsp;&nbsp;
+                
+                <aura:if isTrue="{!v.switch}">
+                    <aura:if isTrue="{!v.isOpen2}">
+                        <aura:if isTrue="{!v.isOpen3}">
+                            <!--###### MODAL BOX Start######--> 
+                            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                                <div class="slds-modal__container">
+                                    <!-- ###### MODAL BOX HEADER Start ######-->
+                                    <header class="slds-modal__header">
+                                        <lightning:buttonIcon iconName="utility:close"
+                                                              onclick="{! c.closeModel }"
+                                                              alternativeText="close"
+                                                              variant="bare-inverse"
+                                                              class="slds-modal__close"/>
+                                        <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate"  style="font-weight: bold;">{!v.title1}</h2>
+                                    </header>
+                                    <!--###### MODAL BOX BODY Part Start######-->
+                                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                                        <aura:if isTrue="{!v.showLoadingSpinner}">
+                                            <center>
+                                                <div class="slds-text-body_small slds-text-color_error">Caricamento...
+                                                    <img src="/auraFW/resources/aura/images/spinner.gif" class="spinner-img" alt="Loading" />
+                                                </div>
+                                            </center>
+                                        </aura:if>
+                                        <aura:if isTrue="{!v.areFields == true}">
+                                            <div class="slds-align_absolute-center" style="padding-top:20px;"> 
+                                                <ui:outputRichText value="{!v.message1}"/>
+                                                
+                                            </div>
+                                        </aura:if>
+                                            
+                                        <br></br>
+                                        <aura:if isTrue="{!v.showFidejusoriBlock}">
+                                            <aura:if isTrue="{!(( (v.allPersonaFisFieldChk) || (v.allPersonaGiuFieldChk) ))}">
+                                                <center>
+                                                    <b> Compilare i seguenti campi mancanti per i Fidejussori: </b>
+                                                </center>
+                                            </aura:if>
+                                             <br></br>
+                                            <!-- Fidejusori Persona Fisica fields check starts -->
+                                            <aura:if isTrue="{!v.allPersonaFisFieldChk}">
+                                                <aura:iteration items="{!v.allPersonaFiscaLst}" var="contact">
+                                                    <center>
+                                                        <aura:if isTrue="{!(( empty(contact.LastName) ||  empty(contact.FirstName) ||  empty(contact.Comune_di_Nascita__c) ||  empty(contact.Sigla_Provincia_Nascita__c) || 
+                                                                         empty(contact.Data_di_Nascita__c) ||  empty(contact.Oplon_Codice_Fiscale__c) ||  empty(contact.Indirizzo_Residenza_Esteso__c) ||  empty(contact.Provincia__c) ||
+                                                                         empty(contact.Comune__c) ||  empty(contact.Cap__c) ||  empty(contact.Email) ||  empty(contact.Ruolo_in_Azienda__c) ))}">
+                                                            <b>
+                                                                Per il Fidejussore - <a href="{!'/one/one.app?#/sObject/'+ contact.Id + '/view'}" target="_blank">{! contact.Name }:</a>
+                                                            </b>
+                                                            <br></br><br></br>
+                                                            <aura:if isTrue="{! (empty(contact.FirstName))}">
+                                                                - First Name <br></br>
+                                                            </aura:if>
+                                                            <aura:if isTrue="{! (empty(contact.LastName))}">
+                                                                - Last Name <br></br>
+                                                            </aura:if>
+                                                            <aura:if isTrue="{! (empty(contact.Comune_di_Nascita__c))}">
+                                                                - Comune di Nascita <br></br>
+                                                            </aura:if>
+                                                            <aura:if isTrue="{! (empty(contact.Sigla_Provincia_Nascita__c))}">
+                                                                - Sigla Provincia Nascita <br></br>
+                                                            </aura:if>
+                                                            <aura:if isTrue="{! (empty(contact.Data_di_Nascita__c))}">
+                                                                - Data di Nascita <br></br>
+                                                            </aura:if>
+                                                            <aura:if isTrue="{! (empty(contact.Oplon_Codice_Fiscale__c))}">
+                                                                - Codice Fiscale <br></br>
+                                                            </aura:if>
+                                                            <aura:if isTrue="{! (empty(contact.Provincia__c))}">
+                                                                - Provincia <br></br>
+                                                            </aura:if>
+                                                            <aura:if isTrue="{! (empty(contact.Comune__c))}">
+                                                                - Comune <br></br>
+                                                            </aura:if>
+                                                            <aura:if isTrue="{! (empty(contact.Cap__c))}">
+                                                                - Cap <br></br>
+                                                            </aura:if>
+                                                            <aura:if isTrue="{! (empty(contact.Email))}">
+                                                                - Email <br></br>
+                                                            </aura:if>
+                                                        </aura:if>
+                                                        
+                                                    </center>
+                                                    <span><br></br></span>
+                                                </aura:iteration>
+                                            </aura:if>
+                                            <!-- Fidejusori Persona Fisica fields check Ends -->
+                                            
+                                            <!-- Fidejusori Persona Giuridica fields check Starts -->
+                                            
+                                            <aura:if isTrue="{!v.allPersonaGiuFieldChk}">
+                                                <aura:iteration items="{!v.allPersonaGiuridicaLst}" var="contact">
+                                                    <center>
+                                                        
+                                                        <aura:if isTrue="{!(( empty(contact.LastName) ||  empty(contact.FirstName) ||  empty(contact.Comune_di_Nascita__c) ||  empty(contact.Sigla_Provincia_Nascita__c) || 
+                                                                         empty(contact.Data_di_Nascita__c) ||  empty(contact.Oplon_Codice_Fiscale__c) ||  empty(contact.Indirizzo_Residenza_Esteso__c) ||  empty(contact.Provincia__c) ||
+                                                                         empty(contact.Comune__c) ||  empty(contact.Cap__c) ||  empty(contact.Ruolo_in_Azienda__c) ||  empty(contact.Account.Email__c) ||  empty(contact.Account.Indirizzo_Sede_Legale_Esteso__c)||  empty(contact.Account.Cap__c)||  empty(contact.Account.Comune__c)||  empty(contact.Account.Sigla_Provincia__c)||  empty(contact.Account.Capitale_Sociale__c) ||  empty(contact.Account.Codice_Fiscale__c) ||  empty(contact.Account.Phone) ||  empty(contact.Account.Cellulare__c) ))}">
+                                                            <b>
+                                                                Per il Fidejussore - <a href="{!'/one/one.app?#/sObject/'+ contact.Id + '/view'}" target="_blank">{! contact.Name }:</a>
+                                                            </b>
+                                                            <br></br><br></br>
+                                                            <aura:if isTrue="{! (empty(contact.FirstName))}">
+                                                                - First Name <br></br>
+                                                            </aura:if>
+                                                            <aura:if isTrue="{! (empty(contact.LastName))}">
+                                                                - Last Name <br></br>
+                                                            </aura:if>
+                                                            <aura:if isTrue="{! (empty(contact.Comune_di_Nascita__c))}">
+                                                                - Comune di Nascita <br></br>
+                                                            </aura:if>
+                                                            <aura:if isTrue="{! (empty(contact.Sigla_Provincia_Nascita__c))}">
+                                                                - Sigla Provincia Nascita <br></br>
+                                                            </aura:if>
+                                                            <aura:if isTrue="{! (empty(contact.Data_di_Nascita__c))}">
+                                                                - Data di Nascita <br></br>
+                                                            </aura:if>
+                                                            <aura:if isTrue="{! (empty(contact.Oplon_Codice_Fiscale__c))}">
+                                                                - Codice Fiscale <br></br>
+                                                            </aura:if>
+                                                            <aura:if isTrue="{! (empty(contact.Provincia__c))}">
+                                                                - Provincia <br></br>
+                                                            </aura:if>
+                                                            <aura:if isTrue="{! (empty(contact.Comune__c))}">
+                                                                - Comune <br></br>
+                                                            </aura:if>
+                                                            <aura:if isTrue="{! (empty(contact.Cap__c))}">
+                                                                - Cap <br></br>
+                                                            </aura:if>				
+                                                            <aura:if isTrue="{! (empty(contact.Ruolo_in_Azienda__c))}">
+                                                                - Ruolo in Azienda <br></br>
+                                                            </aura:if>
+                                                            <aura:if isTrue="{! (empty(contact.Account.Email__c))}">
+                                                                - {! contact.Account.Name } -Email <br></br>
+                                                            </aura:if>
+                                                            <aura:if isTrue="{! (empty(contact.Account.Indirizzo_Sede_Legale_Esteso__c))}">
+                                                                - {! contact.Account.Name } -Indirizzo Sede Legale Esteso <br></br>
+                                                            </aura:if>
+                                                            <aura:if isTrue="{! (empty(contact.Account.Cap__c))}">
+                                                                - {! contact.Account.Name } -Cap <br></br>
+                                                            </aura:if>
+                                                            <aura:if isTrue="{! (empty(contact.Account.Comune__c))}">
+                                                                - {! contact.Account.Name } -Comune <br></br>
+                                                            </aura:if>
+                                                            <aura:if isTrue="{! (empty(contact.Account.Sigla_Provincia__c))}">
+                                                                - {! contact.Account.Name } -Sigla Provincia <br></br>
+                                                            </aura:if>
+                                                            <aura:if isTrue="{! (empty(contact.Account.Capitale_Sociale__c))}">
+                                                                - {! contact.Account.Name } -Capitale Sociale <br></br>
+                                                            </aura:if>
+                                                            <aura:if isTrue="{! (empty(contact.Account.Codice_Fiscale__c))}">
+                                                                - {! contact.Account.Name } -Codice Fiscale <br></br>
+                                                            </aura:if>
+                                                            <aura:if isTrue="{! (empty(contact.Account.Phone))}">
+                                                                - {! contact.Account.Name } -Phone <br></br>
+                                                            </aura:if>
+                                                            <aura:if isTrue="{! (empty(contact.Account.Cellulare__c))}">
+                                                                - {! contact.Account.Name } -Cellulare <br></br>
+                                                            </aura:if>
+                                                        </aura:if>
+                                                        
+                                                    </center>
+                                                    <span><br></br></span>
+                                                </aura:iteration>
+                                            </aura:if>
+                                            
+                                            <!-- Fidejusori Persona Giuridica fields check Ends -->
+                                        </aura:if>
+                                        
+                                        
+                                        
+                                    <aura:if isTrue="{!v.secondWindow == false}">
+                                        <aura:if isTrue="{!v.isDigitale==true}">
+                                            <aura:if isTrue="{!not(empty(v.allFirmatarioContacts)) }">
+                                                <center>
+                                                    <div class="slds-text-heading_small">
+                                                        Hai indicato come firmatario:  
+                                                    </div>
+                                                    <aura:iteration items="{!v.allFirmatarioContacts}" var="contact">
+                                                        <ul>
+                                                            <li>
+                                                                <p>
+                                                                    <a href="{!'/one/one.app?#/sObject/'+ contact.Id + '/view'}" target="_blank"> <br></br> - {! contact.Name }</a></p>
+                                                            </li>
+                                                        </ul>
+                                                    </aura:iteration>
+                                                </center> 
+                                                <br></br>
+                                            </aura:if>
+                                            
+                                            <aura:if isTrue="{!not(empty(v.allFidejussoriContacts)) }">
+                                                <center>                         
+                                                    <div class="slds-text-heading_small">
+                                                        Hai indicato come fidejussori: 
+                                                    </div>
+                                                    <aura:iteration items="{!v.allFidejussoriContacts}" var="contact">
+                                                        <ul>
+                                                            <li>
+                                                                
+                                                                <a href="{!'/one/one.app?#/sObject/'+ contact.Id + '/view'}" target="_blank"> <br></br> - {! contact.Name }</a>
+                                                            </li>
+                                                        </ul>
+                                                    </aura:iteration>                                                                                            
+                                                </center> 
+                                            </aura:if>
+                    <div class="slds-align_absolute-center" style="padding-top:20px;"> 
+                    Le condizioni per effettuare la Firma Digitale sono verificate.
+                    <br></br>
+                    Vuoi procedere con la Firma Digitale o Manuale?
+                    </div>
+                    </aura:if>
+                                            
+                                            <aura:if isTrue="{!v.isDigitale==false}">
+                                                <div class="slds-align_absolute-center" style="padding-top:20px; padding-bottom:20px;"> 
+                                                    Una o più condizioni per effettuare la Firma Digitale non sono verificate:
+                                                </div>
+                                                
+                                                
+                                                <aura:iteration items="{!v.myMap}" var="condition" indexVar="key">
+                                                    <aura:if isTrue="{!condition.value == 'true'}">
+                                                        <lightning:icon iconName="standard:task2" size="xx-small"/>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!condition.value == 'false'}">
+                                                        <lightning:icon iconName="standard:first_non_empty" size="xx-small"/>
+                                                    </aura:if>
+                                                    {!condition.key}
+                                                    <br/><br></br>
+                                                </aura:iteration>
+                                                
+                                                
+                                                
+                                                <div class="slds-align_absolute-center" style="padding-top:20px;"> 
+                                                    Vuoi continuare a modificare l'opportunità per consentire la Firma Digitale oppure vuoi continuare con la Firma Manuale?
+                                                </div>
+                                                <div class="slds-align_absolute-center slds-p-top_large">
+                                                    <lightning:button label="Modifica" onclick="{!c.refresh}" />
+                                                </div>
+                                            </aura:if>
+                                            
+                                            <div class="slds-align_absolute-center slds-p-top_large">
+                                                <aura:if isTrue="{!v.isDigitale==true}">
+                                                    <lightning:button label="Firma Digitale" onclick="{!c.digitalFirm}"  />
+                                                </aura:if>
+                                                
+                                                <lightning:button label="Firma Manuale" onclick="{!c.manualFirm}"/>
+                                                
+                                            </div>
+                                        </aura:if>  
+                                        
+                                        <aura:if isTrue="{!v.secondWindow == true}">
+                                            <aura:if isTrue="{!v.isDigitale}">
+                                                <div class="slds-align_absolute-center slds-text-align_center">
+                                                        <lightning:icon class="slds-m-right_xx-small" iconName="utility:info_alt" alternativeText="Info" size="small" title="small size" /> <b>Attenzione! Per il contratto digitale il procuratore speciale deve essere GIUSEPPE ANTONIO SALVATORE PIGNATELLI.</b>
+                                                </div>
+                                            </aura:if>
+                                            
+                                            <div class="slds-align_absolute-center" style="padding-top:20px;">
+                                                <ui:outputRichText value="{!v.tipoFirma}"/>
+                                            </div>
+                                            <div class="slds-align_absolute-center" style="padding-top:20px;">
+                                                Sei sicuro di voler proseguire?
+                                            </div>
+                                            
+                                            <div class="slds-align_absolute-center slds-m-around--xx-large">
+                                                <lightning:button variant="success" label="Conferma" onclick="{!c.yesButton}" disabled="false"/>
+                                            </div>
+                                            &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            <div class="slds-align_absolute-left slds-m-around--xx-large">
+                                                <lightning:button label="Indietro" iconName="utility:chevronleft" onclick="{!c.goBack1}" /> 
+                                            </div>
+                                            
+                                        </aura:if>
+                                        
+                                        <aura:if isTrue="{!v.onlyManual == true}">
+                                            
+                                            <div class="slds-align_absolute-center" style="padding-top:20px;">
+                                                <ui:outputRichText value="{!v.message1}"/>
+                                            </div>
+                                            
+                                            <div class="slds-align_absolute-center slds-m-around--xx-large">
+                                                <lightning:button variant="success" label="Conferma" onclick="{!c.yesButton}" disabled="false"/>
+                                            </div>
+                                        </aura:if>
+                                        
+                                    </div>
+                                    
+                                    <!--###### MODAL BOX FOOTER Part Start ######-->
+                                    <footer class="slds-modal__footer">
+                                        
+                                        
+                                    </footer>
+                                    
+                                </div>
+                            </section>
+                            
+                            <div class="slds-backdrop slds-backdrop_open"></div>
+                        </aura:if> </aura:if></aura:if></aura:if>
+            <!--###### MODAL BOX Part END Here ######-->
+            <aura:if isTrue="{!(v.CurrentUser.Profile.Name == 'Sales Support' || v.CurrentUser.Profile.Name == 'Sales Support Supervisor' || v.CurrentUser.Profile.Name == 'System Administrator' || v.CurrentUser.Profile.Name == 'Back Office Cedenti Ceduti' || v.CurrentUser.Profile.Name == 'Responsabile BO Cedenti Ceduti')}">
+                <aura:if isTrue="{!or(v.simpleRecord.StageName == 'Firma',v.simpleRecord.StageName == 'In Stipula' || v.simpleRecord.StageName == 'Firma e Cessione')}">
+                    
+                    <aura:if isTrue="{!v.check == true}">
+                        <lightning:button variant="success"  label="Risottomettere Contratto" onclick="{!c.onClickRissotomettereContratto}" />&nbsp;&nbsp;
+                    </aura:if>
+                    <aura:if isTrue="{!v.switch}">
+                        <aura:if isTrue="{!v.isOpen}">
+                            <!--###### MODAL BOX Start######-->
+                            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                                <div class="slds-modal__container">
+                                    <!-- ###### MODAL BOX HEADER Start ######-->
+                                    <header class="slds-modal__header">
+                                        
+                                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Contratto</h2>
+                                    </header>
+                                    
+                                    <!--###### MODAL BOX BODY Part Start######-->
+                                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                                        <aura:if isTrue="{!v.showLoadingSpinner}">
+                                            <center>
+                                                <div class="slds-text-body_small slds-text-color_error">Caricamento...
+                                                    <img src="/auraFW/resources/aura/images/spinner.gif" class="spinner-img" alt="Loading" />
+                                                </div>
+                                            </center>
+                                        </aura:if>
+                                        <div class="slds-align_absolute-center" style="padding-top:20px;">
+                                            <b>
+                                                Sei sicuro di voler retrocedere l'opportunità in Deliberata?
+                                                
+                                            </b>
+                                        </div>
+                                        
+                                        <div class="slds-align_absolute-center slds-m-around--xx-large">
+                                            <lightning:button variant="success" label="Conferma" disabled="false" onclick="{!c.updatestage}"/>
+                                            
+                                            &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            <lightning:button variant="destructive" label="No" disabled="{!v.butonof}" onclick="{!c.goBack}" />
+                                        </div></div>
+                                    <!--###### MODAL BOX FOOTER Part Start ######-->
+                                    <footer class="slds-modal__footer">
+                                    </footer>
+                                </div>
+                            </section>
+                            <div class="slds-backdrop slds-backdrop_open"></div>
+                            <!--###### MODAL BOX Part END Here ######-->
+                        </aura:if>   </aura:if>  </aura:if></aura:if>
+            <aura:if isTrue="{!v.simpleRecord.StageName == 'Deliberata'}">
+                <lightning:button variant="success"  label="Campi Mancanti" onclick="{!c.onClickCampiMancanti}" />
+                <aura:if isTrue="{!v.switch}">
+                    <aura:if isTrue="{!v.isOpen1}">
+                        <!--###### MODAL BOX Start######-->
+                        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                            <div class="slds-modal__container">
+                                <!-- ###### MODAL BOX HEADER Start ######-->
+                                <header class="slds-modal__header">
+                                    <lightning:buttonIcon iconName="utility:close"
+                                                          onclick="{! c.closeModel }"
+                                                          alternativeText="close"
+                                                          variant="bare-inverse"
+                                                          class="slds-modal__close"/>
+                                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Campi Mancanti per Contratto</h2>
+                                </header>
+                                <!--###### MODAL BOX BODY Part Start######-->
+                                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                                    <div class="slds-align_absolute-center" style="padding-top:20px;">
+                                        <aura:if isTrue="{!v.arerules == true}">
+                                            <div class="slds-align_absolute-left" style="padding-top:20px;">
+                                                <ui:outputRichText value="{!v.message}"/>
+                                            </div>
+                                        </aura:if>
+                                        <aura:if isTrue="{!v.arecheck == true}">
+                                            <div class="slds-align_absolute-center" style="padding-top:20px;">
+                                                <h3 style="font-weight: bold; color:green !important;"> Tutti i campi sono valorizatti! </h3>
+                                            </div>
+                                        </aura:if>
+                                    </div>
+                                </div>
+                                <!--###### MODAL BOX FOOTER Part Start ######-->
+                                <footer class="slds-modal__footer">
+                                </footer>
+                            </div>
+                        </section>
+                        <div class="slds-backdrop slds-backdrop_open"></div>
+                    </aura:if> </aura:if> </aura:if>
+            <!--###### MODAL BOX Part END Here ######-->
+            
+        </div>  
+        
+    </aura:if>
+    
+</aura:component>

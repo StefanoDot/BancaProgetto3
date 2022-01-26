@@ -1,0 +1,19 @@
+.THIS .tableClass{
+    margin-top: 100px; 
+}
+.THIS .iconClass{
+    margin-left: 5px;
+}
+.THIS .leadsSelectedClass{
+    font-weight: bold;
+    margin-left: 5px;
+}
+.THIS .convertLeadButton{
+    text-align: center;
+}
+.THIS .selectedLeadsClass{
+    text-align: center;
+}
+.THIS .submitClass{
+    margin-top: auto;
+}

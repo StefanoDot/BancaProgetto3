@@ -1,0 +1,15 @@
+<aura:component description='Download Massivo' controller="fileUploaderController" implements="force:appHostable,flexipage:availableForAllPageTypes,force:lightningQuickActionWithoutHeader,force:hasRecordId" access="global" >
+        
+    
+      <aura:attribute name="recordId" type="String"/>
+      <aura:attribute name="activo" type="Boolean" default="false"/>
+    
+    
+      <div class="slds-col">
+            <!--<ui:button class="slds-float_right slds-align_absolute-top" label="Download"  press="{!c.navigate}"  />-->
+ <lightning:button class="slds-float_right slds-align_absolute-top" label="Download Massivo Documenti" disabled="{!v.activo}" onclick="{!c.navigateToUrl}" />
+    </div>
+                                                                                                                    
+                                                                              
+
+</aura:component>

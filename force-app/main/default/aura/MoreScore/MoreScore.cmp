@@ -1,0 +1,49 @@
+<aura:component description="MoreScore" controller="ElevaServiceLightningController"
+                implements="force:lightningQuickActionWithoutHeader,flexipage:availableForAllPageTypes,force:hasRecordId,forceCommunity:availableForAllPageTypes">
+    
+    <aura:attribute name="message" type="String"/>
+    <aura:attribute name="pressed" type="Boolean" default="false"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" default="false"/>
+    <aura:attribute name="pritt" type="String"/>
+     <aura:attribute name="ricezioni" type="String"/>
+      <aura:attribute name="morescore" type="String"/>
+      <aura:attribute name="errorericezioni" type="String"/>   
+    <aura:attribute name="shfaq" type="Boolean" default="false"/>
+    <aura:attribute name="showLoadingSpinner" type="boolean" default="false" />
+<aura:html tag="style">
+    .slds-modal__close {
+    display: none;
+    }
+    </aura:html>
+      <div class="slds-modal_small">
+        <header class="slds-modal__header">  
+            <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate"  style="font-weight: bold;">{!v.title}</h2>
+            <aura:if isTrue="{!v.showLoadingSpinner}">
+                <center>
+                    <div class="slds-text-body_small slds-text-color_error">Caricamento...
+                        <img src="/auraFW/resources/aura/images/spinner.gif" class="spinner-img" alt="Loading" />
+                    </div>
+                </center>
+            </aura:if>
+        </header>
+    </div>
+  <aura:if isTrue="{!v.shfaq == true}">    
+    <div class="slds-align_absolute-center slds-text-heading_small" style="padding-top:20px;">
+        <ui:outputRichText value="{!v.message}"/>
+    </div>
+    <div class="slds-align_absolute-center slds-text-heading_small" style="padding-top:50px;">
+        <b>Sei sicuro di voler proseguire?</b>
+    </div>
+    
+    
+    <div class="slds-align_absolute-center slds-m-around--xx-large" style="padding-top:20px;">
+        <lightning:button variant="success" label="Yes" onclick="{!c.yesButton}" disabled="false"/> 
+        &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <lightning:button variant="destructive" label="No" onclick="{!c.refresh}" disabled="{!v.pressed}"/>
+    </div>
+       </aura:if>
+    <div class="slds-align_absolute-center slds-text-heading_small"  style="padding-top:20px;">
+        <ui:outputRichText value="{!v.pritt}"/>
+    </div>
+   
+</aura:component>

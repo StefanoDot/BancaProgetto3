@@ -1,0 +1,92 @@
+<aura:component controller = "BP_LC_CreazioneReteAzienda" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:attribute name="loaded" type="Boolean" default="true"/>
+    <aura:attribute name="accountAndContactNames" type="List" default="[]"/>
+    <aura:attribute name="result" type="Opportunity"/>
+    <aura:attribute name="isModalOpen" type="boolean" default="false"/>
+    <aura:attribute name="contactRecords" type="Contact"/>
+    <aura:attribute name="isDittaIndividuale" type="boolean" default="false"/>
+    <aura:attribute name="isLegaleTitolare" type="boolean" default="false"/>
+
+    <aura:if isTrue="{!v.loaded}">
+        <lightning:spinner alternativeText="Loading..." variant="brand"/>
+    </aura:if>
+    <aura:if isTrue="{!v.result}">
+        <div class="slds-box slds-theme_default slds-align_absolute-center">
+            <lightning:button variant="brand" label="{!$Label.c.CreazioneReteAzienda_Button_Label}" title="{!$Label.c.CreazioneReteAzienda_Button_Label}" onclick="{!c.sendAPICall}"/> 
+        </div>
+    </aura:if>
+    <aura:if isTrue="{!v.isModalOpen}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Crea Rete Azienda</h2>
+                </header>
+                <aura:if isTrue="{!v.isDittaIndividuale}">
+                    <aura:if isTrue="{!v.isLegaleTitolare}">
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                            <p style="text-align: center;">
+                                <b>Si sta richiedendo la creazione Rete azienda con i seguenti soggetti:</b>
+                            </p>
+                            <br/>
+                            <aura:iteration items="{!v.accountAndContactNames}" var="item">
+                                <p>{!item}</p>
+                            </aura:iteration>
+                            <br/>
+                            <p style="text-align: center;">
+                                Vuoi Confermare?
+                            </p>
+                        </div>
+                        <footer class="slds-modal__footer">
+                            <lightning:button variant="neutral"
+                                            label="NO"
+                                            title="NO"
+                                            onclick="{!c.closeModel}"/>
+                            <lightning:button variant="brand"
+                                            label="Si"
+                                            title="Si"
+                                            onclick="{!c.callAPI}"/>
+                        </footer>
+                    <aura:set attribute="else">
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                            <b>Per le Ditte Individuale è necessario identificare il referente collegato all'anagrafica anche come Legale Rappresentante!</b>
+                        </div>
+                        <footer class="slds-modal__footer">
+                            <lightning:button variant="neutral"
+                                        label="Torna indietro"
+                                        title="Torna indietro"
+                                        onclick="{!c.closeModel}"/>
+                        </footer>
+                    </aura:set>
+                    </aura:if>
+                <aura:set attribute="else">
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <p style="text-align: center;">
+                            <b>Si sta richiedendo la creazione Rete azienda con i seguenti soggetti:</b>
+                        </p>
+                        <br/>
+                        <aura:iteration items="{!v.accountAndContactNames}" var="item">
+                            <p>{!item}</p>
+                        </aura:iteration>
+                        <br/>
+                        <p style="text-align: center;">
+                            Vuoi Confermare?
+                        </p>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral"
+                                        label="NO"
+                                        title="NO"
+                                        onclick="{!c.closeModel}"/>
+                        <lightning:button variant="brand"
+                                        label="Si"
+                                        title="Si"
+                                        onclick="{!c.callAPI}"/>
+                    </footer>
+                </aura:set>
+                </aura:if>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+</aura:component>

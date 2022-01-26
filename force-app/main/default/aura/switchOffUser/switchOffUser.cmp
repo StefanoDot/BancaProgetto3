@@ -1,0 +1,74 @@
+<aura:component controller="Utils" implements="force:appHostable,flexipage:availableForAllPageTypes,force:lightningQuickAction,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" >
+    <aura:attribute name="fake" type="Boolean" default="false" />
+     <aura:handler name="init" value="{!this}" action="{!c.doInit}" default="false"/>
+    <aura:attribute name="disable" type="Boolean" default="true" />
+    <aura:attribute name="openmodale" type="boolean"/>
+    <aura:attribute name="openmodale2" type="boolean"/>
+    <aura:attribute name="myAttribute" type="String"/>
+    
+    
+    <aura:if isTrue="{!v.fake == true}">
+        <div class="slds-box slds-align_absolute-center"  style="background: white;">
+            <aura:if isTrue="{!v.disable}"> 
+                <lightning:button variant="success" label="Switch User" onclick="{!c.SwitchUser}"/>
+            </aura:if>
+            <aura:If isTrue="{!v.openmodale}">
+                <div aura:id="editDialog" role="dialog" tabindex="-1" aria-labelledby="header43" class="slds-modal slds-fade-in-open slds-modal_small slds-backdrop ">
+                    <div class="slds-modal__container ">
+                        <div class="slds-modal__header" style="width:700px;">
+                            <lightning:buttonIcon iconName="utility:close"
+                                                  onclick="{! c.closeModal }"
+                                                  alternativeText="close"
+                                                  variant="bare-inverse"
+                                                  class="slds-modal__close"/>
+                            <div class="slds-align_absolute-center"> 
+                                <h2 class="slds-text-heading--medium" style="width:800px;">Switch User</h2>
+                            </div>
+                        </div>
+                        <div class="slds-modal__content slds-p-around--medium" style="height:270px; width:700px;" >
+                            <div class="slds-align_absolute-center slds-m-around--medium">
+                                <b>Per spegnere l'utenti devi mettere la password! </b> 
+                            </div>
+                            <center>
+                                <div style="height:50px; width:600px;">
+                                    <lightning:input aura:id="myatt" name="input1" label="Metti Password" value="{!v.myAttribute}" />
+                                </div>
+                            </center>
+                            <div class="slds-align_absolute-center slds-m-around--xx-large" style="padding-top:5px;">
+                                <lightning:button variant="success" label="Entra" onclick="{!c.theEnter}" /> 
+                                &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            </div> 
+                        </div>
+                    </div>
+                </div>
+            </aura:If>    
+            
+           <aura:If isTrue="{!v.openmodale2}">
+                <div aura:id="editDialog" role="dialog" tabindex="-1" aria-labelledby="header43" class="slds-modal slds-fade-in-open slds-modal_small slds-backdrop ">
+                    <div class="slds-modal__container ">
+                        <div class="slds-modal__header" style="width:700px;">
+                            <lightning:buttonIcon iconName="utility:close"
+                                                  onclick="{!c.closeModal}"
+                                                  alternativeText="close"
+                                                  variant="bare-inverse"
+                                                  class="slds-modal__close"/>
+                            <div class="slds-align_absolute-center"> 
+                                <h2 class="slds-text-heading--medium" style="width:800px;">Switch User</h2>
+                            </div>
+                        </div>
+                        <div class="slds-modal__content slds-p-around--medium" style="height:270px; width:700px;" >
+                            <div class="slds-align_absolute-center slds-m-around--medium">
+                                <b> Premi il bottone per scegliere! </b> 
+                            </div>
+                            <div class="slds-align_absolute-center slds-m-around--xx-large" style="padding-top:5px;">
+                                <lightning:button variant="success" label="On" onclick="{!c.turnOn}" disabled="false"/> 
+                                &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <lightning:button variant="destructive" label="Off" onclick="{!c.turnOff}"/>          
+                            </div> 
+                        </div>
+                    </div>
+                </div>
+            </aura:If> 
+        </div>
+    </aura:if> 
+</aura:component>

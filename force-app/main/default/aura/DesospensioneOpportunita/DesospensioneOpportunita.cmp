@@ -1,0 +1,35 @@
+<aura:component controller="Utils" implements="force:appHostable,flexipage:availableForAllPageTypes,force:lightningQuickActionWithoutHeader,force:hasRecordId" access="global" >
+        
+        <ltng:require styles="{!$Resource.RichiediStyle}" />
+    <aura:attribute name="activo" type="Boolean" default="true"/>
+        <aura:attribute name="message" type="String" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" default="false"/>
+ <aura:attribute name="showLoadingSpinner" type="boolean" default="false" />
+<aura:html tag="style">
+    .slds-modal__close {
+    display: none;
+    }
+    </aura:html>
+      <div class="slds-modal_small">
+        <header class="slds-modal__header">  
+            <aura:if isTrue="{!v.showLoadingSpinner}">
+                <center>
+                    <div class="slds-text-body_small slds-text-color_error">Caricamento...
+                        <img src="/auraFW/resources/aura/images/spinner.gif" class="spinner-img" alt="Loading" />
+                    </div>
+                </center>
+            </aura:if>
+        </header>
+    </div>
+  <aura:if isTrue="{!v.showLoadingSpinner == false}">    
+
+    <div class = "slds-text-title_caps" style="padding-top:20px; font-weight: bold;">{!v.message}</div>
+    <div> </div>
+    <div> </div>
+    <div> </div>
+     <div class="slds-float--right" style="padding-top:20px;">
+    	<lightning:button variant="brand"  disabled="{!v.activo}"
+ label="Conferma" onclick="{!c.updateCheck11}"  />
+     </div>
+    </aura:if>
+</aura:component>

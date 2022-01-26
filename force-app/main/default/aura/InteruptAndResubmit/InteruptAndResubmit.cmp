@@ -1,0 +1,128 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,force:lightningQuickAction,force:hasRecordId,forceCommunity:availableForAllPageTypes" 
+                access="global"
+                controller="BP_VideoConferenzaController">
+    
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="isOpen" type="boolean" default="false"/>    
+    <aura:attribute name="showSpinner" type="Boolean"/>
+    <aura:attribute name="showFtrBtn" type="Boolean" default="false"/>    
+    
+    <aura:attribute name="modalHeading" type="String" default=""/>
+    <aura:attribute name="bodyHeading" type="String" default=""/>
+    
+    <aura:attribute name="showAllErrorFields" type="Boolean"/>
+    <aura:attribute name="showInterrupt" type="Boolean"/>
+    <aura:attribute name="showResubmit" type="Boolean"/>
+    <aura:attribute name="CurrentUser" type="Object"/>
+    
+    <aura:attribute name="record" type="Opportunity"
+                    description="The record object to be displayed"/>
+    <aura:attribute name="Opportunity" type="Opportunity" 
+                    description="A simplified view record object to be displayed"/>
+    <aura:attribute name="recordError" type="String"
+                    description="An error message bound to force:recordData"/> 
+    <aura:attribute name="returnMessage" type="String"
+                    description="An message from controller"/>
+    <force:recordData recordId="{!$SObjectType.CurrentUser.Id}"
+                  fields="Profile.Name"
+                  targetFields="{!v.CurrentUser}"/>
+    
+    <!--Declare Event Handlers--> 
+     
+    <!-- Size customization 
+    <aura:html tag="style">
+        .slds-modal__container{ 
+        height: 100%;
+        width: 50%;
+        max-width: 850px;
+        min-width: 480px; 
+        } 
+    </aura:html> -->
+    
+    <force:recordData aura:id="record"
+                      layoutType="FULL"
+                      recordId="{!v.recordId}"
+                      targetError="{!v.recordError}"
+                      targetRecord="{!v.record}"
+                      targetFields="{!v.Opportunity }"
+                      fields="AccountId,StatusOnboarding__c,StatusVideoconferenza__c,StageName,Tipo_Linea_di_Credito__c"
+                      recordUpdated="{!c.handleRecordUpdate}"
+                      mode="EDIT"/>
+    
+    <aura:if isTrue="{!v.showSpinner}">
+        <lightning:spinner variant="brand"  size="large" />
+    </aura:if>
+    <aura:if isTrue="{!(v.Opportunity.StageName == 'Deliberata' &amp;&amp; v.Opportunity.StatusVideoconferenza__c != 'Positivo' &amp;&amp; v.Opportunity.StatusVideoconferenza__c != 'Negativo' &amp;&amp;
+    v.Opportunity.StatusVideoconferenza__c != 'Terminata' &amp;&amp; v.Opportunity.StatusOnboarding__c == 'OK' &amp;&amp; v.Opportunity.Tipo_Linea_di_Credito__c != 'Progetto EasyPlus' &amp;&amp; (v.CurrentUser.Profile.Name != 'Agente' &amp;&amp; v.CurrentUser.Profile.Name != 'Mediatore Creditizio' &amp;&amp; v.CurrentUser.Profile.Name != 'Intermediario Finanziario')) }">
+
+            <aura:if isTrue="{!v.showInterrupt}">
+                <div class="slds-box slds-align_absolute-center"  style="background: white;">
+                    <lightning:button variant="brand" label="Interrompi processo di Riconosscimento" onclick="{!c.handleAbort}" />
+                </div>
+            </aura:if>
+            <aura:if isTrue="{!v.showResubmit}">
+                <div class="slds-box slds-align_absolute-center"  style="background: white;">
+                    <lightning:button variant="brand" label="Risottometti richiesta Riconoscimento" onclick="{!c.handleResubmit}" />
+                </div>
+            </aura:if>
+    </aura:if>
+    
+    <!--Use aura:if tag to display Model Box, on the bese of conditions. [isOpen boolean attribute] -->   
+    <aura:if isTrue="{!v.isOpen}">
+        
+        <!--###### MODAL BOX Start######--> 
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- ###### MODAL BOX HEADER Start ######-->
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close"
+                                          onclick="{! c.closeModel }"
+                                          alternativeText="close"
+                                          variant="bare-inverse"
+                                          class="slds-modal__close"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate"> <b> {!v.modalHeading} </b></h2>
+                </header>
+                <!--###### MODAL BOX BODY Part Start######-->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    
+                    <div class="slds-grid slds-grid_vertical">
+                        <div class="slds-col">
+                            <span>
+                                <center>
+                                    <div class="slds-text-heading_small">
+                                        <aura:unescapedHtml value="{!v.bodyHeading}" />
+                                    </div>                                    
+                                </center>
+                            </span>
+                        </div>
+                        <div class="slds-col">
+                            <span><br></br></span>
+                        </div>
+                        <div class="slds-col">
+                            <span><br></br></span>
+                        </div>
+                        
+                    </div>
+                </div>
+                <!--###### MODAL BOX FOOTER Part Start ######-->
+                <footer class="slds-modal__footer">
+                    <aura:if isTrue="{!v.showFtrBtn}">
+                        <center>
+                            <lightning:button variant="neutral" 
+                                              label="No"
+                                              title="No"
+                                              onclick="{! c.closeModel }"/>
+                            <lightning:button variant="brand" 
+                                              label="Si"
+                                              title="Si"
+                                              onclick="{! c.handleYes }"/>
+                        </center>
+                    </aura:if>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+        <!--###### MODAL BOX Part END Here ######-->
+        
+    </aura:if>  
+</aura:component>

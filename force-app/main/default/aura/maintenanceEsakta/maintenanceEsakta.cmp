@@ -1,0 +1,18 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	  <aura:attribute name="recordLoadError" type="String"/>
+
+    <force:recordData aura:id="recordLoader"
+                      recordId="{!v.recordId}"
+                     
+    />
+
+    <div>
+        <lightning:card>
+            <div class="slds-align_absolute-center slds-size--large">
+        <div class="slds-grid">               
+            <div class="slds-col"> <p><Strong>The system is under maintenance!</Strong> </p></div>
+                </div>
+            </div>
+        </lightning:card>
+    </div>
+</aura:component>

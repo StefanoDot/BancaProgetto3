@@ -1,0 +1,36 @@
+<aura:component description="CampiMancantiContratto" controller="RichiediContrattoController" implements="force:lightningQuickActionWithoutHeader,flexipage:availableForAllPageTypes,force:hasRecordId" >
+	 <ltng:require styles="{!$Resource.RichiediStyle}" />
+    
+    <aura:attribute name="message" type="String"/>
+  
+    <aura:attribute name="title" type="String"/>
+   
+    <aura:attribute name="arerules" type="Boolean" default="false"/>
+    <aura:attribute name="arecheck" type="Boolean" default="false"/>
+    
+     <aura:handler name="init" value="{!this}" action="{!c.doInit}" default="false"/>
+   
+  
+     <div class="slds-modal_small">
+        <header class="slds-modal__header">  
+            <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate"  style="font-weight: bold;">Campi Mancanti per Contratto</h2>
+           
+        </header>
+    </div>
+     <aura:if isTrue="{!v.arerules == true}">
+    <div class="slds-align_absolute-left" style="padding-top:20px;"> 
+            <ui:outputRichText value="{!v.message}"/>
+        
+        </div>
+      
+        
+      </aura:if>
+   
+     <aura:if isTrue="{!v.arecheck == true}">
+    
+    <div class="slds-align_absolute-center" style="padding-top:20px;"> 
+               <h3 style="font-weight: bold; color:green !important;"> Tutti i campi sono valorizatti! </h3>
+            </div>
+        
+         </aura:if>
+</aura:component>

@@ -1,0 +1,17 @@
+<!--
+ - Created by albi on 21/04/2019.
+ -->
+
+<design:component>
+
+    <design:attribute name="oppMultipicklistApiName" label="Opportunity Multipicklist Field Apiname"
+                      description="Name of the Opportunity multipicklist containing the name of the uploaded documents types"/>
+    <design:attribute name="accMultipicklistApiName" label="Account Multipicklist Field Apiname"
+                      description="Name of the Account multipicklist containing the name of the uploaded documents types"/>
+    <design:attribute name="acceptLightningPageBuilderInput" default=".jpg; .jpeg; .png; .pdf; .xlsx; .doc" label="Accepted File Types"
+                      description="List of accepted file types. Values must be separated by semicolons." />
+
+    <sfdc:objects>
+        <sfdc:object>Opportunity</sfdc:object>
+    </sfdc:objects>
+</design:component>

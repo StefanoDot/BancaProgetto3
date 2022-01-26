@@ -1,0 +1,14 @@
+<aura:component controller="Utils" implements="force:appHostable,flexipage:availableForAllPageTypes,force:lightningQuickAction,force:hasRecordId" access="global" >
+        <aura:attribute name="recordId" type="String" />
+
+        <aura:handler name="init" value="{!this}" action="{!c.doInit}"/> 
+
+
+    <div class = "slds-text-title_caps" style="padding-top:20px; font-weight: bold;">Sei sicuro di voler recuperare dati referenti</div>
+    <div> </div>
+    <div> </div>
+    <div> </div>
+     <div class="slds-float--right">
+    	<lightning:button  variant="brand" label="Conferma"  disabled="false" onclick="{!c.updateCheck11}" />
+     </div>
+</aura:component>

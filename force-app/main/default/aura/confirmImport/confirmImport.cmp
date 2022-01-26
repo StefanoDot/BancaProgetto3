@@ -1,0 +1,152 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,force:lightningQuickAction,force:hasRecordId,forceCommunity:availableForAllPageTypes" 
+                access="global"
+                controller="BP_ConfirmImportController">
+    
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    <aura:attribute name="isSelectAll" type="boolean" default="false"/>
+    <aura:attribute name="dupImpMemList" type="list" />
+    <aura:attribute name="showSpinner" type="Boolean"/>
+    <aura:attribute name="isNoDuplicate" type="Boolean" default="False" />
+    
+    <aura:attribute name="record" type="Campaign"
+                    description="The record object to be displayed"/>
+    <aura:attribute name="campaign" type="Campaign" 
+                    description="A simplified view record object to be displayed"/>
+    <aura:attribute name="recordError" type="String"
+                    description="An error message bound to force:recordData"/> 
+    <aura:attribute name="returnMessage" type="String"
+                    description="An message from controller"/>
+    
+    <!--Declare Event Handlers--> 
+     
+    <aura:html tag="style">
+        .slds-modal__container{ 
+        height: 100%;
+        width: 70%;
+        max-width: 850px;
+        min-width: 480px; 
+        } 
+    </aura:html>
+    
+    <force:recordData aura:id="record"
+                      layoutType="FULL"
+                      recordId="{!v.recordId}"
+                      targetError="{!v.recordError}"
+                      targetRecord="{!v.record}"
+                      targetFields="{!v.campaign }"
+                      fields="No_of_Import_Membri__c"
+                      recordUpdated="{!c.handleRecordUpdate}"
+                      mode="EDIT"/>
+    
+    <aura:if isTrue="{!v.showSpinner}">
+        <lightning:spinner variant="brand"  size="large" />
+    </aura:if>
+    
+    <div class="slds-box slds-align_absolute-center"  style="background: white;">
+        <lightning:button variant="brand" label="Import" onclick="{!c.openImportWiz}" />
+        	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <lightning:button variant="brand" label="Confirm Import" onclick="{!c.openModel}" />
+    </div>
+    
+    <!--Use aura:if tag to display Model Box, on the bese of conditions. [isOpen boolean attribute] -->   
+    <aura:if isTrue="{!v.isOpen}">
+        
+        <!--###### MODAL BOX Start######--> 
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- ###### MODAL BOX HEADER Start ######-->
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close"
+                                          onclick="{! c.closeModel }"
+                                          alternativeText="close"
+                                          variant="bare-inverse"
+                                          class="slds-modal__close"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Confirm Import</h2>
+                </header>
+                <!--###### MODAL BOX BODY Part Start######-->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <aura:if isTrue="{!v.isNoDuplicate}">
+                        <div class="slds-text-heading_medium slds-text-align_center">
+                            No Duplicates found. Are you sure you want to proceed ?
+                        </div>
+                        <aura:set attribute="else">
+                            <div class="slds-scrollable_y" style="height:350px;">
+                                <table class="slds-table slds-table--bordered slds-table--cell-buffer">
+                                    <thead>
+                                        <tr class="slds-text-title--caps">
+                                            <th scope="col" style="width:1rem">           
+                                                <label class="slds-checkbox">
+                                                    <ui:inputCheckbox change="{!c.selectAllCheckbox}" aura:id="selectAllId"/>
+                                                    <span class="slds-checkbox--faux" />
+                                                    <span class="slds-form-element__label"></span>
+                                                </label>
+                                            </th>
+                                            <th scope="col" style="width:6rem">
+                                                <div class="slds-truncate" title="Name">Name</div>
+                                            </th>
+                                            <th scope="col" style="width:6rem">
+                                                <div class="slds-truncate" title="Partitia IVA">Email</div>
+                                            </th>
+                                            <th scope="col" style="width:6rem">
+                                                <div class="slds-truncate" title="Codice Fiscale">Codice Fiscale</div>
+                                            </th>
+                                            <th scope="col" style="width:6rem">
+                                                <div class="slds-truncate" title="Duplicate Record">Duplicate Record</div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.dupImpMemList}" var="wrap" indexVar="i">
+                                            <tr>
+                                                <th>
+                                                    <label class="slds-checkbox">
+                                                        <ui:inputCheckbox aura:id="checkCampaign" value="{!wrap.isChecked}" text="{!wrap.impMemObj.Id}"/>
+                                                        <span class="slds-checkbox--faux" />
+                                                        <span class="slds-form-element__label"></span>
+                                                    </label>
+                                                </th>
+                                                <td role="gridcell" class="slds-cell-wrap">
+                                                    <div class="slds-truncate" title="{! wrap.impMemObj.First_Name__c +' '+wrap.impMemObj.Last_Name__c }">{! wrap.impMemObj.First_Name__c }&nbsp;{! wrap.impMemObj.Last_Name__c }</div>
+                                                </td>
+                                                <td role="gridcell" class="slds-cell-wrap">
+                                                    <div class="slds-truncate" title="{! wrap.impMemObj.Email__c }">{! wrap.impMemObj.Email__c }</div>
+                                                </td>
+                                                <td role="gridcell" class="slds-cell-wrap">
+                                                    <div class="slds-truncate" title="{! wrap.impMemObj.Oplon_Codice_Fiscale__c }">{! wrap.impMemObj.Oplon_Codice_Fiscale__c }</div>
+                                                </td>
+                                                <td role="gridcell" class="slds-cell-wrap" data-index="{!i}">
+                                                    <aura:if isTrue="{! wrap.duplicateSobject == 'Account'}">
+                                                    	<a href="{!'/one/one.app?#/sObject/'+ wrap.impMemObj.Account__c + '/view'}" target="_blank">{! wrap.impMemObj.Account__r.Name }</a>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{! wrap.duplicateSobject == 'Lead'}">
+                                                        <a href="{!'/one/one.app?#/sObject/'+ wrap.impMemObj.Lead__c + '/view'}" target="_blank">{! wrap.impMemObj.Lead__r.Name }</a>
+                                                    </aura:if>                                                    
+                                                </td>
+                                            </tr>
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </aura:set>
+                    </aura:if>
+                </div>
+                <!--###### MODAL BOX FOOTER Part Start ######-->
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral" 
+                                      label="Chiudi"
+                                      title="Chiudi"
+                                      onclick="{! c.closeModel }"/>
+                    <lightning:button variant="brand" 
+                                      label="Aggiungi alla campagna"
+                                      title="Aggiungi alla campagna"
+                                      onclick="{! c.addToCampaign }"/>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+        <!--###### MODAL BOX Part END Here ######-->
+        
+    </aura:if>
+    
+</aura:component>

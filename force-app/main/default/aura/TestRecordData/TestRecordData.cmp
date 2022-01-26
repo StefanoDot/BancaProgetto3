@@ -1,0 +1,232 @@
+<!--
+ - Created by ACAPUTO00 on 10/01/2020.
+ -->
+<aura:component controller="Utils" implements="force:appHostable,flexipage:availableForAllPageTypes,force:lightningQuickAction,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" >
+    
+    <aura:attribute name="opportunityRecord" type="Object"/>
+    <aura:attribute name="recordLoadError" type="String"/>
+    <aura:attribute name="openMancantiModal" type="Boolean"/>
+    <aura:attribute name="openNonVerificatiModal" type="Boolean"/>
+    <aura:attribute name="nonVerificati" type="String"/>
+    <aura:attribute name="accountId" type="String" default=""/>
+    <aura:attribute name="visibile" type="Boolean" default="false"/>    
+    <aura:attribute name="oppAndAccDocTypesAreUploaded" type="Boolean" default="false"/>
+    <aura:attribute name="contactDocTypesAreUploaded" type="Boolean" default="false"/>
+    <aura:attribute name="quoteDocTypesAreUploaded" type="Boolean" default="false"/>
+    <aura:attribute name="isEasyPlus" type="Boolean" default="false"/>
+    <aura:attribute name="oppAndAccDocTypesAreVerified" type="Boolean" default="false"/>
+    <aura:attribute name="contactDocTypesAreVerified" type="Boolean" default="false"/>
+    <aura:attribute name="quoteDocTypesAreVerified" type="Boolean" default="false"/>
+    <aura:attribute name="showLoadingSpinner" type="Boolean" default="false" />
+    <aura:attribute name="oppList" type="Object"/>
+    <aura:attribute name="accList" type="Object"/>
+    <aura:attribute name="quoteList" type="Object"/>
+    <aura:attribute name="emptyOppAndAccDocTypes" type="List" default="[]"/>
+    <aura:attribute name="notVerifiedOppAndAccDocTypes" type="List" default="[]"/>
+    <aura:attribute name="emptyContactDocTypes" type="List" default="[]"/>
+    <aura:attribute name="notVerifiedContactDocTypes" type="List" default="[]"/>
+    <aura:attribute name="emptyQuoteDocTypes" type="List" default="[]"/>
+    <aura:attribute name="notVerifiedQuoteDocTypes" type="List" default="[]"/>
+    <aura:attribute name="isOptionalDocuments" type="Boolean" default="false"/>
+    <aura:attribute name="optionalDocumentsList" type="List" default="[]"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <force:recordData aura:id="recordLoader"
+                      recordId="{!v.recordId}"
+                      fields="Name,AccountId,Uploaded_Docs_Counts__c,Uploaded_Verified_Counts__c"
+                      targetFields="{!v.opportunityRecord}"
+                      recordUpdated="{!c.passDataToMassiveDownload}"
+                      targetError="{!v.recordLoadError}"/>
+
+    <div>
+        <lightning:card iconName="standard:opportunity" title="{!v.opportunityRecord.Name}" >
+            <div class="slds-p-horizontal_small">
+                <div class="slds-grid">               
+                    <p> <lightning:formattedNumber value="{!v.opportunityRecord.Uploaded_Docs_Counts__c}"/> </p>
+                    <p class="slds-truncate"> <lightning:formattedNumber value="{!v.opportunityRecord.Uploaded_Verified_Counts__c}"/> </p>
+
+                    <div class="slds-col slds-p-top_small">
+                        <p> <Strong>Uploaded Docs Counts</Strong> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; {!v.opportunityRecord.Uploaded_Docs_Counts__c}</p>
+                    </div>
+
+                    <div class="slds-col slds-p-top_small"> 
+                        <p> <Strong>Uploaded Verified Counts </Strong> &nbsp; &nbsp; &nbsp;  {!v.opportunityRecord.Uploaded_Verified_Counts__c}</p>
+                    </div>
+
+                    <div class="slds-col">
+                        <c:massiveDocumentDownload recordId="{!v.recordId}"
+                                                    accountId="{!v.accountId}" 
+                        ></c:massiveDocumentDownload>
+                    </div>
+
+                    <div class="slds-col">
+                        <lightning:button label="Doc Mancanti" name="docMancantiBtn" class="slds-float_right slds-align_absolute-top" onclick="{!c.getMissingMandatoryDocTypes}"/>
+                    </div>
+
+                    <aura:if isTrue="{!v.visibile}">
+                        <div class="slds-col">
+                            <lightning:button label="Doc non verificati" name="docNonVerificatiAllBtn" class="slds-float_right slds-align_absolute-top" onclick="{!c.getNonVerifiedDocTypes}"/>
+                        </div>
+                    </aura:if>
+                </div>     
+            </div>
+        </lightning:card>
+    </div>
+
+    <aura:if isTrue="{!v.openMancantiModal}">
+        <div aura:id="editDialog" role="dialog" tabindex="-1" aria-labelledby="header43" class="slds-modal slds-fade-in-open slds-modal_small slds-backdrop ">
+            <div class="slds-modal__container ">
+                <div class="slds-modal__header" style="width:650px;">
+                    <lightning:buttonIcon iconName="utility:close"
+                                          onclick="{!c.closeMancantiModal}"
+                                          alternativeText="close"
+                                          variant="bare-inverse"
+                                          class="slds-modal__close"/>
+                    <div class="slds-align_absolute-center"> 
+                        <h2 class="slds-text-heading_medium" style="width:800px;">Informazione per Documenti</h2>
+                    </div>
+                </div>
+
+                <div class="slds-modal__content slds-p-around_medium" style="height:400px; width:650px;">
+                    <div class="slds-align_absolute-center" style="padding-top:10px;padding-bottom:10px;font-size:initial;color:red">
+                        <b>Documenti Non Caricati</b>
+                    </div>
+
+                    <aura:if isTrue="{!v.docTypesAreUploaded}">
+                        <div class="slds-align_absolute-center" style="padding-top:10px;font-size:initial;"> 
+                            Hai caricati tutti gli Documenti
+                        </div>
+
+                        <aura:set attribute="else">
+                            <div class="slds-align_absolute-center">
+                                <aura:if isTrue="{!v.showLoadingSpinner}">
+                                    <div class="slds-text-align_center">
+                                        <div class="slds-text-body_small slds-text-color_error">Caricamento...
+                                            <img src="/auraFW/resources/aura/images/spinner.gif" class="spinner-img" alt="Loading" />
+                                        </div>
+                                    </div>
+                                </aura:if>
+                            </div>
+
+                            <div class="slds-align_absolute-center">
+                                <ul>
+                                    <aura:iteration items="{!v.emptyOppAndAccDocTypes}" var="emptyOppAndAccDocType">
+                                        <aura:if isTrue="{!emptyOppAndAccDocType.objTextCondition}">
+                                            <h2 slot="title" class="slds-card__footer slds-align_absolute-center slds-text-title_bold">{!emptyOppAndAccDocType.objText}</h2>
+                                        </aura:if>
+                                        <div style="width:400px;height:30px">
+                                            <p class="slds-align_absolute-center">{!emptyOppAndAccDocType.Name}</p>
+                                        </div>
+                                    </aura:iteration>
+                                    <aura:iteration items="{!v.emptyContactDocTypes}" var="emptyContactDocType">
+                                        <aura:if isTrue="{!emptyContactDocType.objTextCondition}">
+                                            <h2 slot="title" class="slds-card__footer slds-align_absolute-center slds-text-title_bold">{!emptyContactDocType.objText}</h2>
+                                        </aura:if>
+                                        <div style="width:400px;height:30px">
+                                            <p class="slds-align_absolute-center">{!emptyContactDocType.Name}</p>
+                                        </div>
+                                    </aura:iteration>
+                                    <aura:iteration items="{!v.emptyQuoteDocTypes}" var="emptyQuoteDocType">
+                                        <aura:if isTrue="{!emptyQuoteDocType.objTextCondition}">
+                                            <h2 slot="title" class="slds-card__footer slds-align_absolute-center slds-text-title_bold">{!emptyQuoteDocType.objText}</h2>
+                                        </aura:if>
+                                        <div style="width:400px;height:30px">
+                                            <p class="slds-align_absolute-center">{!emptyQuoteDocType.Name}</p>
+                                        </div>
+                                    </aura:iteration>
+                                </ul>
+                            </div>
+                        </aura:set>
+                    </aura:if>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.openNonVerificatiModal}">
+        <div aura:id="editDialog" role="dialog" tabindex="-1" aria-labelledby="header43" class="slds-modal slds-fade-in-open slds-modal_small slds-backdrop">
+            <div class="slds-modal__container ">
+                <div class="slds-modal__header" style="width:650px;">
+                    <lightning:buttonIcon iconName="utility:close"
+                                          onclick="{!c.closeNonVerificatiModal }"
+                                          alternativeText="close"
+                                          variant="bare-inverse"
+                                          class="slds-modal__close"/>
+
+                    <div class="slds-align_absolute-center"> 
+                        <h2 class="slds-text-heading_medium" style="width:800px;">Informazione per Documenti</h2>
+                    </div>
+                </div>
+
+                <div class="slds-modal__content slds-p-around_medium" style="height:400px; width:650px;">
+                    <div class="slds-align_absolute-center" style="padding-top:10px;padding-bottom:10px;font-size:initial;color:red">
+                        <b>Documenti Non Verificati</b>
+                    </div>
+
+                    <aura:if isTrue="{!v.docTypesAreVerified}">
+                        <div class="slds-align_absolute-center" style="padding-top:10px;padding-bottom:10px;font-size:initial;color:red">
+                            Non hai documenti non verificati
+                        </div>
+
+                        <aura:set attribute="else">
+                            <div class="slds-align_absolute-center" >
+                                <aura:if isTrue="{!v.showLoadingSpinner}">
+                                    <div class="slds-text-align_center">
+                                        <div class="slds-text-body_small slds-text-color_error">Caricamento...
+                                            <img src="/auraFW/resources/aura/images/spinner.gif" class="spinner-img" alt="Loading" />
+                                        </div>
+                                    </div>
+                                </aura:if>
+                            </div>
+
+                            <div class="slds-align_absolute-center">
+                                <ul>
+                                    <aura:iteration items="{!v.notVerifiedOppAndAccDocTypes}" var="notVerifiedOppAndAccDocType">
+                                        <aura:if isTrue="{!notVerifiedOppAndAccDocType.objTextCondition}">
+                                            <h2 slot="title" class="slds-card__footer slds-align_absolute-center slds-text-title_bold">{!notVerifiedOppAndAccDocType.objText}</h2>
+                                        </aura:if>
+                                        <div style="width:400px;height:30px">
+                                            <p class="slds-align_absolute-center">{!notVerifiedOppAndAccDocType.Name}</p>
+                                        </div>
+                                    </aura:iteration>
+                                    <aura:iteration items="{!v.notVerifiedContactDocTypes}" var="notVerifiedContactDocType">
+                                        <aura:if isTrue="{!notVerifiedContactDocType.objTextCondition}">
+                                            <h2 slot="title" class="slds-card__footer slds-align_absolute-center slds-text-title_bold">{!notVerifiedContactDocType.objText}</h2>
+                                        </aura:if>
+                                        <div style="width:400px;height:30px">
+                                            <p class="slds-align_absolute-center">{!notVerifiedContactDocType.Name}</p>
+                                        </div>
+                                    </aura:iteration>
+                                    <aura:iteration items="{!v.notVerifiedQuoteDocTypes}" var="notVerifiedQuoteDocType">
+                                        <aura:if isTrue="{!notVerifiedQuoteDocType.objTextCondition}">
+                                            <h2 slot="title" class="slds-card__footer slds-align_absolute-center slds-text-title_bold">{!notVerifiedQuoteDocType.objText}</h2>
+                                        </aura:if>
+                                        <div style="width:400px;height:30px">
+                                            <p class="slds-align_absolute-center">{!notVerifiedQuoteDocType.Name}</p>
+                                        </div>
+                                    </aura:iteration>
+                                </ul>
+                            </div>
+                            <div class="slds-align_absolute-center" style="padding-top: 10px; padding-bottom: 10px; font-size: initial; color: red">
+                            </div>
+                            <div class="slds-align_absolute-center">
+                                <ul>
+                                    <aura:if isTrue="{!v.isOptionalDocuments}">
+                                        <h2 slot="title" class="slds-card__footer slds-align_absolute-center slds-text-title_bold">Altri Documenti:</h2>
+                                    </aura:if>
+                                    <aura:iteration items="{!v.optionalDocumentsList}" var="optionalDocument">
+                                        <div style="width:400px; height:30px">
+                                            <p class="slds-align_absolute-center">{!optionalDocument.Name}</p>
+                                        </div>
+                                    </aura:iteration>
+                                </ul>
+                            </div>
+                        </aura:set>
+                    </aura:if>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+
+</aura:component>

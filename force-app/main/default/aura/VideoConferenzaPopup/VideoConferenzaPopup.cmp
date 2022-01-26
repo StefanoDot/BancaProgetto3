@@ -1,0 +1,356 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,force:lightningQuickAction,force:hasRecordId,forceCommunity:availableForAllPageTypes" 
+                access="global"
+                controller="BP_VideoConferenzaController">
+    
+    <aura:attribute name="allContacts" type="List" />
+    <aura:attribute name="allFirmatarioContacts" type="List" />
+    <aura:attribute name="allFidejussoriContacts" type="List" />
+    
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="isOpen" type="boolean" default="false"/>    
+    <aura:attribute name="showSpinner" type="Boolean"/>
+    <aura:attribute name="showFtrBtn" type="Boolean" default="false"/>
+    <aura:attribute name="noFirmaContactError" type="String" default=""/>
+    <aura:attribute name="noEmailMobileError" type="String" default="  Contatti non certificati per i seguenti referenti:"/>
+    <aura:attribute name="noNDGError" type="String" default="  NDG non censito per i seguenti referenti:"/>
+    <aura:attribute name="noEmailMobNDGError" type="String" default="  Contatti non certificati e NDG non censito  per i seguenti contatti:"/>
+    <aura:attribute name="noTipoDocumentoError" type="String" default="  Tipo Documento diverso da Carta d'Identità o Passaporto per i seguenti referenti:"/>
+    
+    <aura:attribute name="noEmailMobileLst" type="List" />
+    <aura:attribute name="noNDGELst" type="List" />
+    <aura:attribute name="noEmailMobNDGLst" type="List" />
+    <aura:attribute name="noTipoDocumento" type="List" />
+    
+    <aura:attribute name="showDuplicateChkScrn" type="Boolean" default="false"/>
+    <aura:attribute name="duplicateEmailList" type="List" />
+    <aura:attribute name="duplicateMobileList" type="List" />
+    
+    <aura:attribute name="showSMEError" type="Boolean" default="false"/>
+    <aura:attribute name="noSME002List" type="List" />
+    <aura:attribute name="noSME004List" type="List" />
+    
+    <aura:attribute name="modalHeading" type="String" default="Prenota Riconoscimento"/>
+    <aura:attribute name="bodyHeading" type="String" default="Una o più condizioni per la prenotazione del Riconoscimento in Videoconferenza non sono verificate:"/>
+    <aura:attribute name="bookVideoConferenceScrn" type="Boolean"/>
+    
+    <aura:attribute name="showAllErrorFields" type="Boolean"/>
+    
+    <aura:attribute name="record" type="Opportunity"
+                    description="The record object to be displayed"/>
+    <aura:attribute name="Opportunity" type="Opportunity" 
+                    description="A simplified view record object to be displayed"/>
+    <aura:attribute name="recordError" type="String"
+                    description="An error message bound to force:recordData"/> 
+    <aura:attribute name="returnMessage" type="String"
+                    description="An message from controller"/>
+    
+    <!--Declare Event Handlers--> 
+    
+    <!-- Size customization 
+    <aura:html tag="style">
+        .slds-modal__container{ 
+        height: 100%;
+        width: 50%;
+        max-width: 850px;
+        min-width: 480px; 
+        } 
+    </aura:html> -->
+    
+    <force:recordData aura:id="record"
+                      layoutType="FULL"
+                      recordId="{!v.recordId}"
+                      targetError="{!v.recordError}"
+                      targetRecord="{!v.record}"
+                      targetFields="{!v.Opportunity }"
+                      fields="AccountId,Tipo_Linea_di_Credito__c,StatusOnboarding__c,StatusVideoconferenza__c,StageName"
+                      recordUpdated="{!c.handleRecordUpdate}"
+                      mode="EDIT"/>
+                   
+
+     <aura:if isTrue="{!(v.Opportunity.StageName == 'Deliberata' &amp;&amp; v.Opportunity.StatusOnboarding__c != 'Richiesta' &amp;&amp; v.Opportunity.StatusOnboarding__c != 'OK' &amp;&amp;
+     v.Opportunity.StatusOnboarding__c != 'KO' &amp;&amp; v.Opportunity.StatusOnboarding__c != 'Terminata' &amp;&amp; v.Opportunity.StatusVideoconferenza__c != 'Negativo' &amp;&amp;
+     v.Opportunity.StatusVideoconferenza__c != 'Positivo' &amp;&amp; v.Opportunity.Tipo_Linea_di_Credito__c != 'Progetto EasyPlus')}">
+        <div class="slds-box slds-align_absolute-center"  style="background: white;">
+            <lightning:button variant="brand" label="Prenota Riconoscimento in Videoconferenza" onclick="{!c.openModel}" />
+        </div>
+    </aura:if>
+
+    
+    <!--Use aura:if tag to display Model Box, on the bese of conditions. [isOpen boolean attribute] -->   
+    <aura:if isTrue="{!v.isOpen}">
+        
+        <!--###### MODAL BOX Start######--> 
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- ###### MODAL BOX HEADER Start ######-->
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close"
+                                          onclick="{! c.closeModel }"
+                                          alternativeText="close"
+                                          variant="bare-inverse"
+                                          class="slds-modal__close"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate"> <b> {!v.modalHeading} </b></h2>
+                </header>
+                <!--###### MODAL BOX BODY Part Start######-->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <aura:if isTrue="{!v.showSpinner}">
+                        <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_medium">
+                            <span class="slds-assistive-text">Loading</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </aura:if>
+                    <div class="slds-grid slds-grid_vertical">
+                        <div class="slds-col">
+                            <span>
+                                <center>
+                                    <div class="slds-text-heading_small">
+                                        {!v.bodyHeading}
+                                    </div>                                    
+                                </center>
+                            </span>
+                        </div>
+                        <div class="slds-col">
+                            <span><br></br></span>
+                        </div>
+                        <div class="slds-col">
+                            <aura:if isTrue="{!not(empty(v.noFirmaContactError))}">
+                                <center>
+                                    <lightning:icon iconName="action:close" size="xx-small" alternativeText="Error" title="Error"/>
+                                    {!v.noFirmaContactError}
+                                </center>
+                            </aura:if>
+                            <aura:if isTrue="{!not(empty(v.noEmailMobileLst))}">
+                                <center>
+                                    <lightning:icon iconName="action:close" size="xx-small" alternativeText="Error" title="Error"/>
+                                    {!v.noEmailMobileError}
+                                    
+                                    <aura:iteration items="{!v.noEmailMobileLst}" var="contact">
+                                        <ul>
+                                            <li><a href="{!'/one/one.app?#/sObject/'+ contact.Id + '/view'}" target="_blank"> - {! contact.Name }</a></li>
+                                        </ul>
+                                    </aura:iteration>
+                                </center>
+                            </aura:if>
+                            <aura:if isTrue="{!not(empty(v.noNDGELst))}">
+                                <center>
+                                    <lightning:icon iconName="action:close" size="xx-small" alternativeText="Error" title="Error"/>
+                                    {!v.noNDGError}
+                                    
+                                    <aura:iteration items="{!v.noNDGELst}" var="contact">
+                                        <ul>
+                                            <li><a href="{!'/one/one.app?#/sObject/'+ contact.Id + '/view'}" target="_blank"> - {! contact.Name }</a></li>
+                                        </ul>
+                                    </aura:iteration>
+                                </center>
+                            </aura:if>
+                            <aura:if isTrue="{!not(empty(v.noEmailMobNDGLst))}">
+                                <center>
+                                    <lightning:icon iconName="action:close" size="xx-small" alternativeText="Error" title="Error"/>
+                                    {!v.noEmailMobNDGError}
+                                    
+                                    <aura:iteration items="{!v.noEmailMobNDGLst}" var="contact">
+                                        <ul>
+                                            <li><a href="{!'/one/one.app?#/sObject/'+ contact.Id + '/view'}" target="_blank"> - {! contact.Name }</a></li>
+                                        </ul>
+                                    </aura:iteration>
+                                    
+                                </center>
+                            </aura:if>
+                            <aura:if isTrue="{!not(empty(v.noTipoDocumento))}">
+                                <center>
+                                    <lightning:icon iconName="action:close" size="xx-small" alternativeText="Error" title="Error"/>
+                                    {!v.noTipoDocumentoError}
+                                    
+                                    <aura:iteration items="{!v.noTipoDocumento}" var="contact">
+                                        <ul>
+                                            <li><a href="{!'/one/one.app?#/sObject/'+ contact.Id + '/view'}" target="_blank"> - {! contact.Name }</a></li>
+                                        </ul>
+                                    </aura:iteration>
+                                    
+                                </center>
+                            </aura:if>
+                        </div>
+                        <div class="slds-col">
+                            <aura:if isTrue="{!v.showAllErrorFields}">
+                                <aura:iteration items="{!v.allContacts}" var="contact">
+                                    <div class="slds-p-left_xx-large">
+                                        
+                                        <aura:if isTrue="{!(( empty(contact.LastName) ||  empty(contact.FirstName) ||  empty(contact.Localita__c) ||  empty(contact.Data_di_Nascita__c) || 
+                                                         empty(contact.Oplon_Codice_Fiscale__c) ||  empty(contact.Localita_Residenza__c) ||  empty(contact.Sigla_Provincia__c) ||  empty(contact.Indirizzo_Residenza_Esteso__c) ||
+                                                         empty(contact.Cap__c) ||  empty(contact.Email) ||  empty(contact.MobilePhone) ||  empty(contact.FinServ__Gender__c) ||  empty(contact.Stato_Nascita__c)))}">
+                                            <b>
+                                                Per il Firmatario / Fidejussori - <a href="{!'/one/one.app?#/sObject/'+ contact.Id + '/view'}" target="_blank">{! contact.Name }:</a>
+                                            </b>
+                                            <br></br><br></br>
+                                            <aura:if isTrue="{! (empty(contact.FirstName))}">
+                                                - First Name <br></br>
+                                            </aura:if>
+                                            <aura:if isTrue="{! (empty(contact.LastName))}">
+                                                - Last Name <br></br>
+                                            </aura:if>
+                                            <aura:if isTrue="{! (empty(contact.Localita__c))}">
+                                                - Località Nascita <br></br>
+                                            </aura:if>
+                                            <aura:if isTrue="{! (empty(contact.Data_di_Nascita__c))}">
+                                                - Data di Nascita <br></br>
+                                            </aura:if>
+                                            <aura:if isTrue="{! (empty(contact.Oplon_Codice_Fiscale__c))}">
+                                                - Codice Fiscale <br></br>
+                                            </aura:if>
+                                            <aura:if isTrue="{! (empty(contact.Localita_Residenza__c))}">
+                                                - Località <br></br>
+                                            </aura:if>
+                                            <aura:if isTrue="{! (empty(contact.Sigla_Provincia__c))}">
+                                                - Sigla Provincia <br></br>
+                                            </aura:if>
+                                            <aura:if isTrue="{! (empty(contact.Indirizzo_Residenza_Esteso__c))}">
+                                                - Indirizzo Residenza <br></br>
+                                            </aura:if>
+                                            <aura:if isTrue="{! (empty(contact.Cap__c))}">
+                                                - Cap <br></br>
+                                            </aura:if>
+                                            <aura:if isTrue="{! (empty(contact.Email))}">
+                                                - Email <br></br>
+                                            </aura:if>
+                                            <aura:if isTrue="{! (empty(contact.MobilePhone))}">
+                                                - Cellulare <br></br>
+                                            </aura:if>  
+                                            <aura:if isTrue="{! (empty(contact.FinServ__Gender__c))}">
+                                                - Gender <br></br>
+                                            </aura:if>
+                                            <aura:if isTrue="{! (empty(contact.Stato_Nascita__c))}">
+                                                - Stato Nascita <br></br>
+                                            </aura:if>
+                                        </aura:if>
+                                        
+                                    </div>
+                                    <span><br></br></span>
+                                </aura:iteration>
+                            </aura:if>
+                        </div>
+                        <div class="slds-col">
+                            <aura:if isTrue="{!v.showDuplicateChkScrn}">
+                                <aura:if isTrue="{!not(empty(v.duplicateEmailList)) }">
+                                    <center>
+                                        <div class="slds-text-heading_small">
+                                            I seguenti Referenti hanno la stessa email:
+                                        </div>
+                                        <br></br>
+                                        <aura:iteration items="{!v.duplicateEmailList}" var="contact">
+                                            <ul>
+                                                <li>
+                                                    <a href="{!'/one/one.app?#/sObject/'+ contact.Id + '/view'}" target="_blank"> - {! contact.Name }</a>
+                                                </li>
+                                            </ul>
+                                        </aura:iteration>
+                                    </center>
+                                </aura:if>
+                                
+                                <br></br>
+                                
+                                <aura:if isTrue="{!not(empty(v.duplicateMobileList)) }">
+                                    <center>
+                                        <div class="slds-text-heading_small">
+                                            I seguenti Referenti hanno lo stesso numero di cellulare:
+                                        </div>
+                                        <br></br>
+                                        <aura:iteration items="{!v.duplicateMobileList}" var="contact">
+                                            <ul>
+                                                <li>
+                                                    <a href="{!'/one/one.app?#/sObject/'+ contact.Id + '/view'}" target="_blank"> - {! contact.Name }</a>
+                                                </li>
+                                            </ul>
+                                        </aura:iteration>
+                                    </center>
+                                </aura:if>
+                                
+                            </aura:if>
+                        </div>
+                        <div class="slds-col">
+                            <aura:if isTrue="{!v.showSMEError}">
+                                <aura:if isTrue="{!not(empty(v.noSME002List)) }">
+                                    <center>
+                                        <div class="slds-text-heading_small">
+                                            Manca Doc Identità Referente per i seguenti Referenti:
+                                        </div>
+                                        <br></br>
+                                        <aura:iteration items="{!v.noSME002List}" var="contact">
+                                            <ul>
+                                                <li>
+                                                    <a href="{!'/one/one.app?#/sObject/'+ contact.Id + '/view'}" target="_blank"> - {! contact.Name }</a>
+                                                </li>
+                                            </ul>
+                                        </aura:iteration>
+                                    </center>
+                                    <br></br>
+                                </aura:if>
+                                <aura:if isTrue="{!not(empty(v.noSME004List)) }">
+                                    <center>
+                                        <div class="slds-text-heading_small">
+                                            Manca CF Referente per i seguenti Referenti:
+                                        </div>
+                                        <br></br>
+                                        <aura:iteration items="{!v.noSME004List}" var="contact">
+                                            <ul>
+                                                <li>
+                                                    <a href="{!'/one/one.app?#/sObject/'+ contact.Id + '/view'}" target="_blank"> - {! contact.Name }</a>
+                                                </li>
+                                            </ul>
+                                        </aura:iteration>
+                                    </center>
+                                </aura:if>
+                            </aura:if>
+                        </div>
+                        <div class="slds-col">
+                            <aura:if isTrue="{!v.bookVideoConferenceScrn}">
+                                <div class="slds-p-left_xx-large">
+                                    <b>
+                                        Elenco firmatari:
+                                    </b>
+                                    <br></br><br></br>
+                                    <aura:iteration items="{!v.allFirmatarioContacts}" var="contact">
+                                        - {! contact.Name}
+                                        <span><br></br></span>
+                                    </aura:iteration>
+                                </div>
+                                <br></br>
+                                <aura:if isTrue="{!not(empty(v.allFidejussoriContacts)) &amp;&amp; v.Opportunity.Tipo_Linea_di_Credito__c == 'Mutuo'}">
+                                    <div class="slds-p-left_xx-large">
+                                        <b>
+                                            Elenco 	fidejussori:
+                                        </b>
+                                        <br></br><br></br>
+                                        <aura:iteration items="{!v.allFidejussoriContacts}" var="contact">
+                                            - {! contact.Name}
+                                            <span><br></br></span>
+                                        </aura:iteration>
+                                    </div>
+                                </aura:if>
+                            </aura:if>
+                        </div>
+                    </div>
+                </div>
+                <!--###### MODAL BOX FOOTER Part Start ######-->
+                <footer class="slds-modal__footer">
+                    <aura:if isTrue="{!v.showFtrBtn}">
+                        <center>
+                            <lightning:button variant="neutral" 
+                                              label="No"
+                                              title="No"
+                                              onclick="{! c.closeModel }"/>
+                            <lightning:button variant="brand" 
+                                              label="Si"
+                                              title="Si"
+                                              onclick="{! c.handleYes }"/>
+                        </center>
+                    </aura:if>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+        <!--###### MODAL BOX Part END Here ######-->
+        
+    </aura:if>
+
+</aura:component>

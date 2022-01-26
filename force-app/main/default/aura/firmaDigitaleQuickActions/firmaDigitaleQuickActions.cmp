@@ -1,0 +1,6 @@
+<aura:component implements="force:lightningQuickActionWithoutHeader,flexipage:availableForRecordHome,force:hasRecordId">
+    <aura:attribute name="recordId" type="String"/>  
+    <c:firmaDigitale recordId="{!v.recordId}"    onvaluechange="{!c.onClickCancel}" > </c:firmaDigitale>        
+    
+
+</aura:component>

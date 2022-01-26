@@ -1,0 +1,56 @@
+<aura:component description="CambiaUtente" controller="Utils"
+                implements="force:lightningQuickActionWithoutHeader,flexipage:availableForAllPageTypes,force:hasRecordId,forceCommunity:availableForAllPageTypes">
+          <ltng:require styles="{!$Resource.RichiediStyle}" />
+
+    <aura:attribute name="userList" type="User[]"/> 
+    <aura:handler name="init" value="{!this}" action="{!c.pickUser}"/>
+    <aura:attribute name="pressed" type="Boolean" default="false"/>
+    <aura:attribute name="selectedValue" type="String"/>
+    <aura:attribute name="shfaq" type="Boolean" default="false"/>
+    <aura:attribute name="user" type="Boolean" default="true"/>
+    <aura:attribute name="selectedValueId" type="String"/>
+    <aura:attribute name="accId" type="String"/>
+    
+    <aura:if isTrue="{!v.user == true}">    
+        <fieldset class="slds-box slds-theme--default slds-container--medium">
+            <legend id="newexpenseform" class="slds-text-heading--small 
+                                               slds-p-vertical--medium">
+                Seleziona Utente
+            </legend>
+            <form class="slds-form--stacked">
+                <lightning:select aura:id="select1" name="select1"  onchange="{!c.onChange1}">
+                    <option value="Select">Seleziona... </option>
+                    <aura:iteration items="{!v.userList}" var="user"> 
+                        <option value="{!user.Id}" label="{!user.Name}"></option>
+                    </aura:iteration>
+                </lightning:select>
+            </form>
+        </fieldset>
+    </aura:if>
+    <aura:if isTrue="{!v.shfaq == true}">    
+        
+        <div class="slds-align_absolute-center slds-text-heading_small" style="padding-top:30px;">
+          Hai scelto di sostituire il Sales di riferimento Area con il seguente Inside Sales:
+        </div>
+        <div class="slds-align_absolute-center slds-text-heading_small" style="padding-top:50px;">
+            
+           <b>  <ui:outputRichText value="{!v.selectedValue}"/></b>
+        </div>
+        
+        <div class="slds-align_absolute-center slds-text-heading_small" style="padding-top:30px;">
+Sei sicuro di voler proseguire con il cambiamento del Sales di riferimento Area?       
+        </div>
+        
+        <div class="slds-align_absolute-center slds-m-around--x-large" style="padding-top:20px;">
+          
+            <lightning:button variant="success" label="Yes" onclick="{!c.yesButton}" disabled="false"/> 
+            &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <lightning:button variant="destructive" label="No" onclick="{!c.refresh}" disabled="{!v.pressed}"/>
+        </div>
+   
+                 <div class="slds-align_absolute-left slds-m-around--xx-large">
+          <lightning:button variant="brand-outline" label="Cambia Utente" onclick="{!c.cambia}" disabled="{!v.pressed}"/>
+           </div>
+
+    </aura:if>
+</aura:component>

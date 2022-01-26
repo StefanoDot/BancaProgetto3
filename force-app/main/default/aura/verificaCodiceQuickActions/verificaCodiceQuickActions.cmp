@@ -1,0 +1,4 @@
+<aura:component implements="force:lightningQuickActionWithoutHeader,force:hasRecordId">
+    <aura:attribute name="recordId" type="String"/>  
+    <c:certificaContatti recordId="{!v.recordId}" onvaluechange="{!c.onClickCancel}"> </c:certificaContatti>
+</aura:component>

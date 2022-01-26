@@ -1,0 +1,10 @@
+<aura:component  implements="force:lightningQuickActionWithoutHeader,flexipage:availableForAllPageTypes,force:hasRecordId">
+	<aura:attribute name="record" type="Map" default="{}" />
+    <lightning:notificationsLibrary aura:id="notifLib"/>
+
+<force:recordData 
+    recordId="{!v.recordId}" 
+    layoutType="FULL" 
+    targetFields="{!v.record}" 
+    recordUpdated="{!c.optionalShowToast}" />
+</aura:component>

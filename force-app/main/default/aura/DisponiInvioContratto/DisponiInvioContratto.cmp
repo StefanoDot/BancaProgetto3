@@ -1,0 +1,27 @@
+<!--
+ - Created by ACAPUTO00 on 18/03/2020.
+ -->
+
+<aura:component description="DisponiInvioContratto" controller="RichiediContrattoController" implements="force:lightningQuickActionWithoutHeader,flexipage:availableForAllPageTypes,force:hasRecordId">
+
+    <aura:attribute name="record" type="Object"/>
+    <aura:attribute name="simpleRecord" type="Object"/>
+    <aura:attribute name="recordError" type="String"/>
+    <aura:attribute name="fields" type="String[]" default="['Name']" />
+    <aura:attribute name="message" type="String"/>
+
+    <force:recordData aura:id="recordLoader"
+                      recordId="{!v.recordId}"
+                      targetRecord="{!v.record}"
+                      targetFields="{!v.simpleRecord}"
+                      targetError="{!v.recordError}"
+                      recordUpdated="{!c.handleRecordUpdated}"
+                      layoutType="FULL"
+                      mode="VIEW"
+    />
+
+    <aura:handler name="init" action="{!c.handleDisponiInvioContratto}" value="{!this}"/>
+    <div class="slds-align_absolute-center" style="padding: 20px">
+        <ui:outputRichText value="{!v.message}"/>
+    </div>
+</aura:component>

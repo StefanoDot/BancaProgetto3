@@ -1,0 +1,13 @@
+<aura:component controller="BP_LC_AnticipoPEF" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:attribute name="loaded" type="Boolean" default="true"/>
+    <aura:attribute name="result" type="Opportunity"/>
+    <aura:if isTrue="{!v.loaded}">
+        <lightning:spinner alternativeText="Loading..." variant="brand"/>
+    </aura:if>
+    <aura:if isTrue="{!v.result}">
+        <div class="slds-box slds-theme_default slds-align_absolute-center">
+            <lightning:button variant="brand" label="{!$Label.c.AnticipoPEF_Button_Label}" title="{!$Label.c.AnticipoPEF_Button_Label}" onclick="{!c.sendAPICall}"/> 
+        </div>
+    </aura:if>
+</aura:component>
