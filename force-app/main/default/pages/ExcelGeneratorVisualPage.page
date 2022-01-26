@@ -1,0 +1,27 @@
+<apex:page controller="ExcelGeneratorController" action="{!exportToExcel}" readOnly="true" contentType="application/vnd.ms-excel#ConsignmentSearchData.xls">
+
+
+    <apex:pageBlock >
+        <apex:pageBlockTable value="{!lstwrapper}" var="x">
+             <apex:column headerValue="Id">
+                {!x.Id}
+            </apex:column>
+             <apex:column headerValue="Agente">
+                {!x.Agente}
+            </apex:column>
+            <apex:column headerValue="Mese">
+                {!x.Mese}
+            </apex:column>
+            <apex:column headerValue="Importo">
+                {!x.Importo}
+            </apex:column>
+            <apex:column headerValue="Provincia">
+                {!x.Provincia}
+            </apex:column>
+             <apex:column headerValue="Tipo">
+                {!x.Tipo}
+            </apex:column>
+        </apex:pageBlockTable>
+    </apex:pageBlock>   
+
+</apex:page>

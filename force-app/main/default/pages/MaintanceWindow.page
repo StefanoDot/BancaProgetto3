@@ -1,0 +1,26 @@
+<!--
+- Created by Matteo Tornielli on 22/03/2019.
+-->
+
+<apex:page showHeader="true" sidebar="false" applyHtmlTag="true" standardStylesheets="false" applyBodyTag="true">
+        
+        
+        
+    <html>
+        
+        <div style="min-height:900px;" class="ng-cloak" ng-app="app" ng-controller="RicercaClientiController">
+            
+            <!-- Spinner -->
+            <div ng-show="showSpinner" class="demo-only demo--inverse">
+                <div class="slds-spinner_container">
+                    <div role="status" class="slds-spinner slds-spinner_large">
+                        <span class="slds-assistive-text">The system is under maintenance!</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+          
+    </html>
+</apex:page>

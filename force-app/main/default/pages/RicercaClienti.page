@@ -1,0 +1,368 @@
+<!--
+- Created by Matteo Tornielli on 22/03/2019.
+-->
+
+<apex:page id="RicercaClienti" controller="AccountsController" showHeader="true" sidebar="false" applyHtmlTag="true" standardStylesheets="false" applyBodyTag="true">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        
+        
+        
+        <apex:includeScript value="{!$Resource.angular_178}" />
+        <apex:includeScript value="{!$Resource.RicercaClientiControllerJS}" />
+        
+        <apex:slds />
+        
+        <apex:includeLightning />
+        
+        
+        <style>
+            html body.sfdcBody {
+            padding: 0px!important;
+            background-color: white!important;
+            }
+            .noSidebarCell, .sidebarCell .fixed {
+            padding: 0px!important;
+            }
+            .arrow_button {
+            margin-left: 0!important;
+            width: 30px!important;
+            position: relative!important;
+            right: 6px!important;
+            border-top-left-radius: 0!important;
+            border-bottom-left-radius: 0!important;
+            }
+            .arrow_button:focus{
+            box-shadow: none!important;
+            }
+            .bold{
+            font-weight:bold;
+            }
+            .selected_row{
+            background:rgb(243, 242, 242);
+            box-shadow: rgb(221, 219, 218) 0 -1px 0 inset, rgb(221, 219, 218) 0 1px 0 inset;
+            }
+            .light-button-brand {
+            border-color: #e84261!important;
+            background-color: #e84261!important;
+            }
+            .light-button-brand:hover {
+            border-color: #d2314f!important;
+            background-color: #d2314f!important;
+            }
+            .box-bottom-separator {
+            border-width: 1px;
+            border-style: none none solid none;
+            border-color: #D8DDE6;
+            background-color: #F4F6F9;
+            }
+            .page-title {
+            font-size: 17px;
+            margin-left: 6px;
+            }
+            .slds-scope .slds-table thead th {
+            background-color: #FFFFFF!important;
+            font-weight: 800!important;
+            height: 32px!important;
+            }
+            .pagination-less {
+            border-style: solid;
+            border-width: 1px;
+            width: 30px;
+            height: 30px;
+            line-height: 27px;
+            text-align: center;
+            font-size: 14px;
+            border-color: #D8DDE6;
+            color: #D8DDE6;
+            border-top-left-radius: 3px;
+            border-bottom-left-radius: 3px;
+            cursor:default;
+            }
+            .pagination-greater {
+            border-style: solid;
+            border-width: 1px;
+            width: 30px;
+            height: 30px;
+            line-height: 27px;
+            text-align: center;
+            font-size: 14px;
+            border-color: #D8DDE6;
+            color: #D8DDE6;
+            border-top-right-radius: 3px;
+            border-bottom-right-radius: 3px;
+            cursor:default;
+            }
+            .pagination-page {
+            border-style: solid;
+            border-width: 1px;
+            width: 30px;
+            height: 30px;
+            line-height: 27px;
+            text-align: center;
+            font-size: 14px;
+            border-color: #D8DDE6;
+            color: #D8DDE6;
+            cursor:default;
+            }
+            .selected-page {
+            background-color: #a11832;
+            color: #FFFFFF;
+            }
+            .pointer {
+            cursor:pointer!important;
+            }
+            
+            .slds-scope .slds-button {
+            color: rgba(161, 24, 50, 1);
+            }
+            .slds-scope .slds-button:hover, .slds-scope .slds-button:focus {
+            color: rgba(143, 0, 38, 1);
+            }
+            .slds-scope .slds-button_brand, .slds-scope .slds-button--brand {
+            border: 1px solid #a11832;
+            transition: border .15s linear;
+            background-color: #a11832;
+            border-color: #a11832;
+            color: rgb(255, 255, 255);
+            }
+            .slds-scope .slds-button_brand:hover, .slds-scope .slds-button_brand:focus, .slds-scope .slds-button--brand:hover, .slds-scope .slds-button--brand:focus {
+            background-color: rgba(143, 0, 38, 1);
+            border-color: rgba(143, 0, 38, 1);
+            color: rgb(255, 255, 255);
+            }
+            
+        </style>
+        
+        
+        <div style="min-height:900px;" class="ng-cloak" ng-app="app" ng-controller="RicercaClientiController">
+            
+            <!-- Spinner -->
+            <div ng-show="showSpinner" class="demo-only demo--inverse">
+                <div class="slds-spinner_container">
+                    <div role="status" class="slds-spinner slds-spinner_large">
+                        <span class="slds-assistive-text">Caricamento</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- FINE SPINNER -->
+            
+            <div class="box-bottom-separator slds-p-around--large">
+                <span class="slds-icon_container slds-icon-standard-account" title="">
+                    <svg class="slds-icon " aria-hidden="true">
+                        <use xlink:href="{!URLFOR($Resource.SLDS252, '/icons/standard-sprite/svg/symbols.svg#account')}"></use>
+                    </svg>
+                    <span class="slds-assistive-text"></span>
+                </span>
+                <span class="page-title">Ricerca Clienti</span>
+            </div>
+            <div class="box-bottom-separator slds-p-around--large">
+                <div class="slds-grid slds-wrap">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-large-size_2-of-12 slds-p-around--large">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" for="text-input-id-1">Denominazione Società</label>
+                            <div class="slds-form-element__control">
+                                <input ng-model="filters.ragioneSociale" id="text-input-id-1" class="slds-input" type="text" value="" ng-keypress="enter($event)"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-large-size_2-of-12 slds-p-around--large">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" for="text-input-id-1">Codice Fiscale</label>
+                            <div class="slds-form-element__control">
+                                <input ng-model="filters.codiceFiscale" id="text-input-id-1" class="slds-input" type="text" value="" ng-keypress="enter($event)" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-large-size_2-of-12 slds-p-around--large">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" for="text-input-id-1">Partita Iva</label>
+                            <div class="slds-form-element__control">
+                                <input ng-model="filters.partitaIva" id="text-input-id-1"  class="slds-input" type="text" value="" ng-keypress="enter($event)" />
+                            </div>
+                        </div>
+                    </div>
+                    <!--
+<div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-large-size_2-of-12 slds-p-around--large">
+<div class="slds-form-element">
+<label class="slds-form-element__label" for="text-input-id-1">Telefono Centralino</label>
+<div class="slds-form-element__control">
+<input ng-model="filters.telefono" id="text-input-id-1" class="slds-input" type="text" value="" ng-keypress="enter($event)" />
+</div>
+</div>
+</div>
+-->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-large-size_1-of-12 slds-m-top--large"></div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-large-size_1-of-12 slds-m-top--xx-large">
+                        <button ng-click="searchAccount()" class="slds-button slds-button_brand">
+                            <span class="slds-icon_container slds-icon-utility-announcement" title="">
+                                <svg class="slds-icon slds-icon-text-default slds-icon_x-small" style="fill:#FFFFFF;" aria-hidden="true">
+                                    <use xlink:href="{!URLFOR($Resource.SLDS252, '/icons/utility-sprite/svg/symbols.svg#people')}"></use>
+                                </svg>
+                            </span>
+                            <span>Cerca</span></button>
+                    </div>
+                    <apex:form >
+                        <apex:actionFunction id="getredirectToAccountCreation" name="getredirectToAccountCreation" action="{!getredirectToAccountCreation}" />
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-large-size_1-of-12 slds-m-top--xx-large">
+                            
+                            <button onclick="getredirectToAccountCreation();  return false;"
+                                    class="slds-button slds-button_neutral"><!--createNewAccount( '{!$Site.Domain}' )-->
+                                <span class="slds-icon_container slds-icon-utility-announcement" title="">
+                                    <svg class="slds-icon slds-icon-text-default slds-icon_x-small" style="fill:#a11832;" aria-hidden="true">
+                                        <use xlink:href="{!URLFOR($Resource.SLDS252, '/icons/utility-sprite/svg/symbols.svg#adduser')}"></use>
+                                    </svg>
+                                </span>
+                                <span>Nuovo</span></button>
+                        </div>
+                    </apex:form>
+                </div>
+                
+            </div>
+            
+            <table ng-show="accounts.length > 0" class="slds-table slds-table_bordered slds-table_cell-buffer">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        
+                        <th scope="col">
+                            <div class="slds-truncate" title="Name">Denominazione Società</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Codice Fiscale">Codice Fiscale</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Partita Iva">Partita Iva</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="CAP">CAP</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Provincia">Provincia</div>
+                        </th>
+                        <!--<th scope="col">
+<div class="slds-truncate" title="Telefono">Telefono</div>
+</th>-->
+                        <!--
+<th scope="col" >
+<div class="slds-truncate" title="Tipo Cliente">Tipo Cliente</div>
+</th>
+-->
+                        <!--<th scope="col" >
+<div class="slds-truncate" title="Titolare Cliente">Titolare Cliente</div>
+</th>-->
+                        <th scope="col" style="width:125px;">
+                            <div class="slds-truncate" title=""></div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody ng-repeat="acc in accounts track by $index">
+                    <tr ng-class="searchedAcc.showDetails ? 'selected_row' : ''">
+                        <th scope="row" data-label="Denominazione Società">
+                            <div class="slds-truncate" title="" style="color:#388FDC;">{{acc.account.Name}}</div>
+                        </th>
+                        <td data-label="Codice Fiscale">
+                            <div class="slds-truncate" title="">{{acc.account.Codice_Fiscale__c}}</div>
+                        </td>
+                        <td data-label="Partita Iva">
+                            <div class="slds-truncate" title="">{{acc.account.Partita_IVA__c}}</div>
+                        </td>
+                        <td data-label="CAP">
+                            <div class="slds-truncate" title="">{{acc.account.BillingPostalCode}}</div>
+                        </td>
+                        <td data-label="Provincia">
+                            <div class="slds-truncate" title="">{{acc.account.BillingState}}</div>
+                        </td>
+                        <!--<td data-label="Telefono">
+<div class="slds-truncate" title="">{{acc.account.Phone}}</div>
+</td>-->
+                        <!--
+<td data-label="Tipo Cliente">
+<div class="slds-truncate" title="">{{acc.account.Type}}</div>
+</td>
+-->
+                        <!--<td data-label="Owner">
+<div class="slds-truncate" title="">{{acc.account.Owner.Name}}</div>
+</td>-->
+                        <td data-label="" style="padding-right:0;" >
+                            <div class="slds-truncate" title="">
+                                <button ng-show="acc.action == 1"  class="slds-button slds-button_brand" style="margin-left:0;width:100px;padding-left: 0.8rem;" ng-click="go(acc)">Visualizza</button>
+                                <button ng-show="acc.action == 2" class="slds-button slds-button_brand light-button-brand" style="margin-left:0;width:100px;padding-left: 0.8rem;" ng-click="assignToMe(acc);">Acquisisci</button>
+                                <!--
+
+<button class="slds-button slds-button_icon slds-button_icon-border-filled arrow_button" ng-click="acc.showDetails = !acc.showDetails">
+<svg class="slds-button__icon" aria-hidden="true">
+<use ng-hide="acc.showDetails" xlink:href="{!URLFOR($Resource.SLDS252, '/icons/utility-sprite/svg/symbols.svg#down')}" />
+<use ng-show="acc.showDetails" xlink:href="{!URLFOR($Resource.SLDS252, '/icons/utility-sprite/svg/symbols.svg#up')}" />
+</svg>
+</button>
+-->
+                                <div style="clear:both;"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr ng-show="acc.showDetails">
+                        <td colspan='9'>
+                            <div style="margin-top:3px;">
+                                <span class="bold" >Provincia: </span><span>{{acc.account.BillingState}}</span>
+                            </div>
+                            <div style="margin-top:3px;">
+                                <span class="bold">CAP: </span><span>{{acc.account.BillingPostalCode}}</span><br />
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div ng-show="accounts.length > 0" class="slds-grid slds-grid_align-center slds-m-top--medium">
+                <div class="slds-col pagination-less" ng-click="goToPage(selectedPage - 1)" ng-class="(selectedPage != 1) ? 'pointer' : ''">
+                    <span>&#60;</span>
+                </div>
+                <div ng-repeat="page in pages track by $index" ng-click="goToPage(page)" class="slds-col pagination-page" ng-class="(selectedPage == page) ? 'selected-page' : 'pointer'">
+                    <span>{{page}}</span>
+                </div>
+                <div class="slds-col pagination-greater" ng-click="goToPage(selectedPage + 1)" ng-class="(selectedPage != pages[pages.length-1]) ? 'pointer' : ''">
+                    <span>&#62;</span>
+                </div>
+            </div>
+            
+            
+            
+            <div ng-show="accounts.length > 0" class="slds-table slds-table_bordered slds-table_cell-buffer">
+                <div ng-repeat="acc in accounts track by $index">
+                    <div ng-show="acc.action == 0"  class="slds-scoped-notification slds-media slds-media_center slds-scoped-notification_light slds-m-top_large" role="status">
+                        <div class="slds-media__figure">
+                            <span class="slds-icon_container slds-icon-utility-info" title="information">
+                                <svg class="slds-icon slds-icon_small slds-icon-text-default" aria-hidden="true">
+                                    <use xlink:href="{!URLFOR($Resource.SLDS252, '/icons/utility-sprite/svg/symbols.svg#info')}" />
+                                </svg>
+                                <span class="slds-assistive-text">information</span>
+                            </span>
+                        </div>
+                        <div class="slds-media__body">
+                            <p>Attenzione! L’ anagrafica <strong>{{acc.account.Name}}</strong> è in titolarità ad un altro partner.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <div ng-show="noResults" class="slds-scoped-notification slds-media slds-media_center slds-scoped-notification_light slds-m-top_large" role="status">
+                <div class="slds-media__figure">
+                    <span class="slds-icon_container slds-icon-utility-info" title="information">
+                        <svg class="slds-icon slds-icon_small slds-icon-text-default" aria-hidden="true">
+                            <use xlink:href="{!URLFOR($Resource.SLDS252, '/icons/utility-sprite/svg/symbols.svg#info')}" />
+                        </svg>
+                        <span class="slds-assistive-text">information</span>
+                    </span>
+                </div>
+                <div class="slds-media__body">
+                    <p>La ricerca non ha prodotto risultati.</p>
+                </div>
+            </div>
+            
+            
+        </div>
+        
+    </html>
+</apex:page>

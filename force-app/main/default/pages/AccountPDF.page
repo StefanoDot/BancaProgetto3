@@ -1,0 +1,85 @@
+<apex:page standardController="Account" renderAs="pdf">
+
+    <h1></h1>
+    
+    <p> <b><apex:outputText value="{!Account.Name}"/></b></p>
+    
+    <p> </p>
+    
+    <table>
+        <tr><th>Anagrafica Cliente &nbsp;</th>
+            <td><apex:outputText value="{!Account.Name}"/></td>
+        </tr>
+        <tr><th>Titolare Anagrafica Cliente &nbsp;</th>
+            <td><apex:outputText value="{!Account.Owner.Name}"/></td>
+        </tr>
+        <tr><th>Data di Creazione &nbsp;</th>
+            <td><apex:outputText value="{0,date,long}">
+                <apex:param value="{!Account.CreatedDate}"/>
+                </apex:outputText></td>
+        </tr>
+        
+         <tr><th>Livello Rischio &nbsp;</th>
+            <td>
+                <apex:outputlabel >
+    			<apex:outputfield value="{!Account.Risk_Level__c}" />
+                </apex:outputlabel>
+             </td>
+        </tr>
+        
+        <tr><th>Settore Riclassificato &nbsp;</th>
+            <td>
+                <apex:outputlabel >
+    			<apex:outputfield value="{!Account.ECONOMIC_ACTIVITY__c}" />
+                </apex:outputlabel>
+            </td>
+        </tr>
+        
+         <tr><th>Cluster Patrimonio Netto &nbsp;</th>
+            <td>
+                <apex:outputlabel >
+    			<apex:outputfield value="{!Account.EQUITY_CLUSTER__c}" />
+                </apex:outputlabel>
+             </td>
+        </tr>
+        
+        <tr><th>Eventi Negativi &nbsp;</th>
+            <td>
+                  <apex:outputlabel >
+    			<apex:outputfield value="{!Account.Negative_Event__c}" />
+                </apex:outputlabel>
+            </td>
+        </tr>
+        
+         <tr><th>MacroZona Geografica &nbsp;</th>
+            <td>  <apex:outputlabel >
+    			<apex:outputfield value="{!Account.GEOGRAPHIC_AREA__c}" />
+                </apex:outputlabel></td>
+        </tr>
+        
+        <tr><th>Cluster Claim Severity &nbsp;</th>
+            <td>  <apex:outputlabel >
+    			<apex:outputfield value="{!Account.Claim_Severity_Cluster__c}" />
+                </apex:outputlabel></td>
+        </tr>
+        
+        <tr><th>Cluster Trend Economico &nbsp;</th>
+            <td>  <apex:outputlabel >
+    			<apex:outputfield value="{!Account.ECONOMIC_TREND_CLUSTER__c}" />
+                </apex:outputlabel>
+            </td>
+        </tr>
+        
+        
+        <tr><th>Tipo Valutazione &nbsp;</th>
+            <td>  <apex:outputlabel >
+    			<apex:outputfield value="{!Account.EVALUTATION_METHOD__c}" />
+                </apex:outputlabel></td>
+        </tr>
+        
+        <tr><th>Ricezione Dati Coface &nbsp;</th>
+            <td><apex:outputText value="{!Account.Ricezione_dati_Coface__c  }"/></td>
+        </tr>
+    </table>
+    
+</apex:page>
