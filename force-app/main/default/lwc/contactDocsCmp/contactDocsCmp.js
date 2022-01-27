@@ -65,6 +65,7 @@ export default class MyComponentName extends LightningElement {
 
 
     profileName;
+    isProfileRespBo = '';
     disableAllButtons = false;
     defaultFileName = '';
     enableMandatoryDocTypes = false;
@@ -166,6 +167,7 @@ export default class MyComponentName extends LightningElement {
             this.isProfileTuttiSales = resultApex.isProfileTuttiSales;
             this.isAdmin = resultApex.isAdmin;
             this.profileName = resultApex.profileName;
+            this.isProfileRespBo = resultApex.isProfileRespBo;
 
             if (this.objectApiName === 'Contact' && this.objectApiName) {
                 this.getRecordListDocumentAllNew();
@@ -306,7 +308,9 @@ export default class MyComponentName extends LightningElement {
                             } else {
                                 this.setVerificaOkAvailabilityForDocs(documentType, false);
                             }
-                        } else {
+                        } else if(this.oppIsCreditiFiscali && this.isProfileRespBo){
+                            documentType.isUploadDisabled = false;
+                        }else {
                             documentType.isUploadDisabled = this.isRecTypeRO || (this.isErogazioneNO && documentType.Erogazione_Servizi__c === true) || (documentType.visibileaPartner__c === false && !this.isProfileFidimed);
                             documentType.disableSalvaButton = this.isRecTypeRO
                         }
