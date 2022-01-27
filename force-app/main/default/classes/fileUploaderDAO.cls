@@ -1237,6 +1237,8 @@ public with sharing class fileUploaderDAO extends ApexServiceLibraryCnt {
         Boolean isProfileMediatore;
         Boolean isProfileIntermediario;
         Boolean isProfileBackOffice;
+        Boolean isProfileRespBo;
+        Boolean isProfileRespBoCedenti;
 
         Map<String, Object> varMap = new Map<String, Object>();
 
@@ -1261,6 +1263,8 @@ public with sharing class fileUploaderDAO extends ApexServiceLibraryCnt {
         isProfileMediatore = profileName == 'Mediatore Creditizio' ? true : false;
         isProfileIntermediario = profileName == 'Intermediario Finanziario' ? true : false;
         isProfileBackOffice = profileName == 'Back Office Cedenti Ceduti' ? true : false;
+        isProfileRespBo = profileName == 'Responsabile BO cedenti ceduti' ? true : false;
+        isProfileRespBoCedenti = profileName == 'Back Office Cedenti Ceduti' ? true : false;
 
 
         if (objectApiName == 'Opportunity') {
@@ -1321,6 +1325,8 @@ public with sharing class fileUploaderDAO extends ApexServiceLibraryCnt {
         varMap.put('isProfileMediatore', isProfileMediatore);
         varMap.put('isProfileIntermediario', isProfileIntermediario);
         varMap.put('isProfileBackOffice', isProfileBackOffice);
+        varMap.put('isProfileRespBo', isProfileRespBo);
+        varMap.put('isProfileRespBoCedenti', isProfileRespBoCedenti);
 
         System.debug('varMap' + varMap);
         System.debug('varMap isSwitchActive' + varMap.get('isSwitchActive'));
