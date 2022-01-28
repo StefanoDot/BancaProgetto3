@@ -995,6 +995,7 @@ system.debug('ElevaRestApiController RequestBodyGetMoreScore - End');
                                      Data_Rilascio__c,
                                      Paese_Rilascio__c,	
                                      Stato_ResidenzaEstero__c,
+                                     Stato_Residenza_Estero__c,
                                      Residenza__c,
                                      Codice_Catastale__c,
                                      Comune_di_Nascita__c,
@@ -1196,7 +1197,13 @@ system.debug('ElevaRestApiController RequestBodyGetMoreScore - End');
         public Fidejussore (Contact contact, boolean isPersonaFisica){
             
             if(isPersonaFisica){
-                
+                if(contact.Stato_Residenza_Estero__c != 'ITALIA' && contact.Stato_Residenza_Estero__c != null){
+                    this.provinciaResidenzaGarante = 'EE';
+                    this.capResidenzaGarante = 'EE';
+                } else{
+                    this.provinciaResidenzaGarante=contact.Sigla_Provincia__c;
+                    this.capResidenzaGarante = contact.Cap__c;
+                }
                 this.nomeGarante = contact.FirstName;
                 this.cognomeGarante = contact.LastName;            
                 this.luogoNascitaGarante = contact.Comune_di_Nascita__c;
@@ -1204,9 +1211,7 @@ system.debug('ElevaRestApiController RequestBodyGetMoreScore - End');
                 this.dataNascitaGarante = convertDatetoString(contact.Data_di_Nascita__c);
                 this.codiceFiscaleGarante = contact.Oplon_Codice_Fiscale__c;
                 this.inidrizzoResidenzaGarante = contact.Indirizzo_Residenza_Esteso__c;
-                this.provinciaResidenzaGarante = contact.Sigla_provincia__c;
                 this.paeseResidenzaGarante = contact.Comune__c;
-                this.capResidenzaGarante = contact.Cap__c;
                 this.tipoPersona = 'PF'; 
                 this.pecGarante = contact.Email;
                 this.nomeAziendaGarante = '';
@@ -1222,16 +1227,21 @@ system.debug('ElevaRestApiController RequestBodyGetMoreScore - End');
             }
             else
             {
+                if(contact.Stato_Residenza_Estero__c != 'ITALIA' && contact.Stato_Residenza_Estero__c != null){
+                    this.provinciaResidenzaGarante = 'EE';
+                    this.capResidenzaGarante = 'EE';
+                } else{
+                    this.provinciaResidenzaGarante=contact.Sigla_Provincia__c;
+                    this.capResidenzaGarante = contact.Cap__c;
+                }
                 this.nomeGarante = contact.FirstName;
                 this.cognomeGarante = contact.LastName;            
                 this.luogoNascitaGarante = contact.Comune_di_Nascita__c;
                 this.provinciaNascitaGarante = contact.Sigla_Provincia_Nascita__c;
                 this.dataNascitaGarante = convertDatetoString(contact.Data_di_Nascita__c);
                 this.codiceFiscaleGarante = contact.Oplon_Codice_Fiscale__c;
-                this.inidrizzoResidenzaGarante = contact.Indirizzo_Residenza_Esteso__c;
                 this.provinciaResidenzaGarante = contact.Provincia__c;
                 this.paeseResidenzaGarante = contact.Comune__c;
-                this.capResidenzaGarante = contact.Cap__c;
                 this.tipoPersona = 'PG';
                 this.pecGarante = contact.Email;
                 this.nomeAziendaGarante = contact.account.Name;
@@ -1462,10 +1472,16 @@ system.debug('ElevaRestApiController RequestBodyGetMoreScore - End');
             else{
                 this.paeseResidenza ='Italia';
             }
+            if(referente.Stato_Residenza_Estero__c != 'ITALIA' && referente.Stato_Residenza_Estero__c != null){
+                this.siglaProvinciaCittaResidenzaFirmatario = 'EE';
+                this.capResidenzaFirmatario = 'EE';
+            } else{
+                this.siglaProvinciaCittaResidenzaFirmatario=referente.Sigla_Provincia__c;
+                this.capResidenzaFirmatario = referente.Cap__c;
+            }
             
             this.titoloPersonaFirmatario = referente.Titolo_Firmatario__c;
             this.paeseRilascio = referente.Paese_Rilascio__c;
-            
             this.genereNascita= referente.Genere_Nascita__c;
             this.cognomeFirmatario=referente.LastName;
             this.nomeFirmatario=referente.FirstName;
@@ -1474,9 +1490,7 @@ system.debug('ElevaRestApiController RequestBodyGetMoreScore - End');
             this.codiceFiscaleFirmatario= referente.Oplon_Codice_Fiscale__c;
             this.numCellulareFirmatario=referente.Prefisso_Internazionale__c+ referente.MobilePhone;
             this.cittaResidenzaFirmatario=  referente.Comune__c;
-            this.siglaProvinciaCittaResidenzaFirmatario=referente.Sigla_Provincia__c;
             this.indirizzoResidenzaFirmatario = referente.Indirizzo_Residenza_Esteso__c;
-            this.capResidenzaFirmatario = referente.Cap__c;
             this.ruoloAziendaleFirmatario = referente.Ruolo_in_Azienda__c;
             cittaNascitaFirmatario=referente.Localita__c;
             sfContactId=referente.Id;
