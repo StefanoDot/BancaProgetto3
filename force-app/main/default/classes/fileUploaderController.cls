@@ -516,7 +516,6 @@ public with sharing class fileUploaderController extends TriggerHandler {
             if (doc.Opportunity__c <> null) {
                 docOpportunities.add(doc.Opportunity__c);
             }
-
             if (doc.Account__c <> null) {
                 docAccounts.add(doc.Account__c);
             }
@@ -537,7 +536,6 @@ public with sharing class fileUploaderController extends TriggerHandler {
                 }
             }
         }
-
         if (docAccounts.size() != 0) {
             for (Opportunity opportunity: [SELECT Id, Name FROM Opportunity WHERE AccountId IN : docAccounts ]) {
                 docOpportunities.add(opportunity.Id);
@@ -1060,10 +1058,11 @@ public with sharing class fileUploaderController extends TriggerHandler {
 
     public static void conditionUpdateUrl(List<Document__c> triggerListNew,Map<Id,Document__c> mappaTriggerOld) {
         List<Document__c> flitDoc = associoTrigggerNewOld(triggerListNew,mappaTriggerOld); //get all the doc WHERE the url doc is changed
-
+            System.debug('flitDoc ' + flitDoc);
+            System.debug('flitDoc size ' + flitDoc.size());
         if ((flitDoc.size() > 0) && (flitDoc != null)) {
             // List<Id> listId=  associateIdRecord(flitDoc);
-            List<Id> opportunityId = new List<Id>();
+            Set<Id> oppIdSet = new Set<Id>();
             List<Id> contactId = new List<Id>();
             List<Id> accountId = new List<Id>();
             List<Id> quoteId = new List<Id>();
@@ -1074,6 +1073,7 @@ public with sharing class fileUploaderController extends TriggerHandler {
 
             //check if the changed doc is of acc, cont, quote, opp
             for (Document__c doc: flitDoc) {
+                System.debug('doc.Opportunity__c ' + doc.Opportunity__c);
                 if (doc.Contact__c != null) {
                     contactDocs.add(doc);
                     contactId.add(doc.Contact__c);
@@ -1085,18 +1085,27 @@ public with sharing class fileUploaderController extends TriggerHandler {
                     quoteId.add(doc.Quote__c);
                 } else if (doc.Opportunity__c != null) {
                     opportunityDocs.add(doc);
-                    opportunityId.add(doc.Opportunity__c);
+                    oppIdSet.add(doc.Opportunity__c);
                 }
             }
-            
-            if (!opportunityDocs.isEmpty()) {
+            System.debug('opportunityId ' + oppIdSet);
+            System.debug('opportunityDocs ' + opportunityDocs);
+            /*if (!opportunityDocs.isEmpty()) {
                 Map<Id,Opportunity> mapTypeDoc = recoveryAllFieldsOpportunity(opportunityDocs,opportunityId);
                 List<Opportunity> oppUpdate = replaceUrlOpportunity(opportunityDocs,mapTypeDoc);
-                if(!oppUpdate.isEmpty())
+                System.debug('mapTypeDoc ' + mapTypeDoc);
+                System.debug('oppUpdate ' + oppUpdate);
+                if(!oppUpdate.isEmpty() &&  oppUpdate != null)
                 {
+                  
                     update oppUpdate;
                 }
+            }*/
+            List<Id> docId = new List<Id>();
+            for (Document__c d : opportunityDocs){
+                docId.add(d.id);
             }
+            conditionUpdateUrlAsync(docId, oppIdSet);
 
             if (!quoteDocs.isEmpty()) {
                 Map<Id,Quote> mapTypeDoc = recoveryAllFieldsQuote(quoteDocs,quoteId);
@@ -1116,6 +1125,28 @@ public with sharing class fileUploaderController extends TriggerHandler {
                 }
             }
         }
+    }
+    @future
+    public static void conditionUpdateUrlAsync(List<Id> oppListDocs, Set<Id> oppIdSet) {
+        List<Id> opportunityId = new List<Id>();
+        for(Id oppId : oppIdSet){
+            opportunityId.add(oppId);
+        }
+        List<Document__c> opportunityDocs = [SELECT Id, Name, Url_Documento__c, DocumentType__c,DocumentTypeName__c, Opportunity__c, Url_Servizio_Esterno__c FROM Document__c WHERE id In: oppListDocs];
+ 
+        
+        if (!opportunityDocs.isEmpty()) {
+            Map<Id,Opportunity> mapTypeDoc = recoveryAllFieldsOpportunity(opportunityDocs,opportunityId);
+            List<Opportunity> oppUpdate = replaceUrlOpportunity(opportunityDocs,mapTypeDoc);
+            System.debug('mapTypeDoc ' + mapTypeDoc);
+            System.debug('oppUpdate ' + oppUpdate);
+            if(!oppUpdate.isEmpty() &&  oppUpdate != null)
+            {
+              
+                update oppUpdate;
+            }
+        }
+     
     }
 
     public static void deleteFile(List<Document__c> triggerListNew,Map<Id,Document__c> mappaTriggerOld) {
@@ -1195,9 +1226,14 @@ public with sharing class fileUploaderController extends TriggerHandler {
     
     @TestVisible   private static List<Document__c> associoTrigggerNewOld(List<Document__c> triggerListNew,Map<Id,Document__c> mappaTriggerOld) {
         List<Document__c> flitDoc= new List<Document__c>();
+        System.debug('triggerListNew ' + triggerListNew);
 
         for (Document__c d: triggerListNew) {
+            System.debug('Entra qua ' + mappaTriggerOld.get(d.Id).Url_Documento__c);
+            System.debug('Entra qua 1' + d.Url_Documento__c);
+            System.debug('Entra qua 2 ' + d.DocumentTypeName__c);
             if ((mappaTriggerOld.get(d.Id).Url_Documento__c != d.Url_Documento__c)&&(d.DocumentTypeName__c != null)&&(d.Url_Documento__c != null)&&(d.Url_Documento__c != '')) {
+                System.debug('Entra qua 3 ');        
                 flitDoc.add(d);
             }
         }
