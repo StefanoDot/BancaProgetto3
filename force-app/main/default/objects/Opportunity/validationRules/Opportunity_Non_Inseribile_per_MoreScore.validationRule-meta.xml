@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Opportunity_Non_Inseribile_per_MoreScore</fullName>
+    <active>true</active>
+    <errorConditionFormula>(ISPICKVAL($CustomMetadata.Switch_Validation__mdt.Account.Status__c,&quot;ON&quot;))
+&amp;&amp;
+RecordType.DeveloperName = &apos;Lending&apos;
+&amp;&amp;
+ISNEW() 
+&amp;&amp;
+Account.CreateOpportunity__c = false
+&amp;&amp;
+OR(ISPICKVAL(Account.MoreScore__c, &quot;D&quot;), ISPICKVAL(Account.MoreScore__c, &quot;C&quot;))</errorConditionFormula>
+    <errorMessage>Non è possibile procedere con la creazione di un&apos;Opportunità in quanto il MoreScore non è eleggibile.</errorMessage>
+</ValidationRule>

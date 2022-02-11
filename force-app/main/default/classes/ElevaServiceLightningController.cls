@@ -140,4 +140,9 @@ public with sharing class ElevaServiceLightningController {
       
         return response; 
     }
+    @AuraEnabled
+    public static void getAnagraphicDetailsAura(String recordId) {
+        List<Account> accList = [SELECT Id,Codice_Fiscale__c,userMail__c,Anagrafica_Id_Oplon__c, updateOplonUserEmail__c  FROM Account WHERE id=: recordId];
+        AccountsController.getAnagraphicDetails(accList);
+    }
 }

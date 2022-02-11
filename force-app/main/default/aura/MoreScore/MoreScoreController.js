@@ -39,6 +39,48 @@
         });
         $A.enqueueAction(actionCheck);
     },
+    handleRecordUpdate : function(component, event, helper) {
+    },
+
+    acquistaDatiFULL : function(component, event, helper) {
+      
+        var recordId =  component.get("v.recordId");
+        var actionCheck = component.get('c.getAnagraphicDetailsAura');
+        console.log('recordId: '+ recordId);
+        console.log('vjen ketu 1');
+        actionCheck.setParams({"recordId" : recordId})   
+        actionCheck.setCallback(this, function (response) {
+            var toastEvent = $A.get("e.force:showToast");
+            var state = response.getState();  
+            console.log('state ' + state);
+            if(state === 'SUCCESS') {  
+               
+                toastEvent.setParams({
+                    "mode": "sticky",
+                    "title": "Success!",
+                    "message": 'Chiamata effetuata corretamente!',
+                    "type":"success"
+                }); 
+                component.set("v.shfaq",false); 
+                toastEvent.fire();
+            }
+            else{
+                console.log('vjen ketu2');
+                toastEvent.setParams({
+                    "mode": "sticky",        
+                    "title": "Error!",
+                    "message": response.responseMessage,
+                    "type":"error"
+                });
+                toastEvent.fire();
+                component.set("v.showLoadingSpinner", false); 
+                component.set("v.shfaq",true);
+            } 
+            $A.get("e.force:closeQuickAction").fire();
+            $A.get("e.force:refreshView").fire();               
+        });
+        $A.enqueueAction(actionCheck);
+    },
     
     yesButton:function(component, event, helper){
         console.log('yesiii');
